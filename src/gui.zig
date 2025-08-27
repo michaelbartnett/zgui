@@ -4050,6 +4050,125 @@ extern fn zguiEndDragDropTarget() void;
 extern fn zguiGetDragDropPayload() [*c]Payload;
 //--------------------------------------------------------------------------------------------------
 //
+// Multi-selection
+//
+//--------------------------------------------------------------------------------------------------
+/// Main IO structure returned by BeginMultiSelect()/EndMultiSelect().
+/// This mainly contains a list of selection requests.
+/// - Use 'Demo->Tools->Debug Log->Selection' to see requests as they happen.
+/// - Some fields are only useful if your list is dynamic and allows deletion (getting post-deletion focus/state right is shown in the demo)
+/// - Below: who reads/writes each fields? 'r'=read, 'w'=write, 'ms'=multi-select code, 'app'=application/user code.
+pub const MultiSelectIO = extern struct {
+    ///-----------------// BeginMultiSelect / EndMultiSelect
+    /// Requests;       //  ms:w, app:r     /  ms:w  app:r   // Requests to apply to your selection data.
+    /// RangeSrcItem;   //  ms:w  app:r     /                // (If using clipper) Begin: Source item (generally the first selected item when multi-selecting, which is used as a reference point) must never be clipped!
+    /// NavIdItem;      //  ms:w, app:r     /                // (If using deletion) Last known SetNextItemSelectionUserData() value for NavId (if part of submitted items).
+    /// NavIdSelected;  //  ms:w, app:r     /        app:r   // (If using deletion) Last known selection state for NavId (if part of submitted items).
+    /// RangeSrcReset;  //        app:w     /  ms:r          // (If using deletion) Set before EndMultiSelect() to reset ResetSrcItem (e.g. if deleted selection).
+    /// ItemsCount;     //  ms:w, app:r     /        app:r   // 'int items_count' parameter to BeginMultiSelect() is copied here for convenience, allowing simpler calls to your ApplyRequests handler. Not used internally.
+    requests: Vector(SelectionRequest),
+    range_src_item: SelectionUserData,
+    nav_id_item: SelectionUserData,
+    nav_id_selected: bool,
+    range_src_reset: bool,
+    items_count: c_int,
+};
+
+pub const SelectionUserData = enum(i64) {
+    _,
+
+    pub fn from(v: anytype) @This() {
+        const Value = @TypeOf(v);
+        const Tag = std.meta.Tag(@This());
+        const cast = if (@sizeOf(Value) == @sizeOf(@This())) packed struct(Tag) {
+            value: Value,
+        } else packed struct(Tag) {
+            value: Value,
+            _: [8 - @sizeOf(Value)]u8,
+        };
+        const pack: cast = .{ .value = v };
+        const tag: Tag = @bitCast(pack);
+        return @enumFromInt(tag);
+    }
+
+    pub fn as(self: @This(), comptime T: type) T {
+        const Tag = std.meta.Tag(@This());
+        const cast = if (@sizeOf(T) == @sizeOf(@This())) packed struct(Tag) {
+            result: T,
+        } else packed struct(Tag) {
+            result: T,
+            _: [8 - @sizeOf(T)]u8,
+        };
+        const pack: cast = @bitCast(@intFromEnum(self));
+        return pack.result;
+    }
+};
+
+/// Selection request item
+const SelectionRequest = extern struct {
+    ///------------------// BeginMultiSelect / EndMultiSelect
+    /// Type;           //  ms:w, app:r     /  ms:w, app:r   // Request type. You'll most often receive 1 Clear + 1 SetRange with a single-item range.
+    /// Selected;       //                  /  ms:w, app:r   // Parameter for SetAll/SetRange request (true = select, false = unselect)
+    /// RangeDirection; //                  /  ms:w  app:r   // Parameter for SetRange request: +1 when RangeFirstItem comes before RangeLastItem, -1 otherwise. Useful if you want to preserve selection order on a backward Shift+Click.
+    /// RangeFirstItem; //                  /  ms:w, app:r   // Parameter for SetRange request (this is generally == RangeSrcItem when shift selecting from top to bottom)
+    /// RangeLastItem;  //                  /  ms:w, app:r   // Parameter for SetRange request (this is generally == RangeSrcItem when shift selecting from bottom to top)
+    type: SelectionRequestType,
+    selected: bool,
+    range_direction: i8,
+    range_first_item: SelectionUserData,
+    range_last_item: SelectionUserData,
+};
+
+/// Selection request type
+const SelectionRequestType = enum(c_int) {
+    none = 0,
+    set_all = 1, // Request app to clear selection (if Selected==false) or select all items (if Selected==true)
+    set_range, // Request app to select/unselect [RangeFirstItem..RangeLastItem] items (inclusive) based on value of Selected. Only EndMultiSelect() request this, app code can read after BeginMultiSelect() and it will always be false.
+};
+
+const MultiSelectFlags = packed struct(c_int) {
+    single_select: bool = false, // Disable selecting more than one item. This is available to allow single-selection code to share same code/logic if desired. It essentially disables the main purpose of BeginMultiSelect() tho!
+    no_select_all: bool = false, // Disable CTRL+A shortcut to select all.
+    no_range_select: bool = false, // Disable Shift+selection mouse/keyboard support (useful for unordered 2D selection). With BoxSelect is also ensure contiguous SetRange requests are not combined into one. This allows not handling interpolation in SetRange requests.
+    no_auto_select: bool = false, // Disable selecting items when navigating (useful for e.g. supporting range-select in a list of checkboxes)
+    no_auto_clear: bool = false, // Disable clearing selection when navigating or selecting another one (generally used with ImGuiMultiSelectFlags_NoAutoSelect. useful for e.g. supporting range-select in a list of checkboxes)
+    no_auto_clear_on_reselect: bool = false, // Disable clearing selection when clicking/selecting an already selected item
+    box_select1d: bool = false, // Enable box-selection with same width and same x pos items (e.g. only full row Selectable()). Box-selection works better with little bit of spacing between items hit-box in order to be able to aim at empty space.
+    box_select2d: bool = false, // Enable box-selection with varying width or varying x pos items support (e.g. different width labels, or 2D layout/grid). This is slower: alters clipping logic so that e.g. horizontal movements will update selection of normally clipped items.
+    box_select_no_scroll: bool = false, // Disable scrolling when box-selecting near edges of scope.
+    clear_on_escape: bool = false, // Clear selection when pressing Escape while scope is focused.
+    clear_on_click_void: bool = false, // Clear selection when clicking on empty location within scope.
+    scope_window: bool = false, // Scope for _BoxSelect and _ClearOnClickVoid is whole window (Default). Use if BeginMultiSelect() covers a whole window or used a single time in same window.
+    scope_rect: bool = false, // Scope for _BoxSelect and _ClearOnClickVoid is rectangle encompassing BeginMultiSelect()/EndMultiSelect(). Use if BeginMultiSelect() is called multiple times in same window.
+    select_on_click: bool = false, // Apply selection on mouse down when clicking on unselected item. (Default)
+    select_on_click_release: bool = false, // Apply selection on mouse release when clicking an unselected item. Allow dragging an unselected item without altering selection.
+    range_select2d: bool = false, // Shift+Selection uses 2d geometry instead of linear sequence, so possible to use Shift+up/down to select vertically in grid. Analogous to what BoxSelect does.
+    nav_wrap_x: bool = false, // [Temporary] Enable navigation wrapping on X axis. Provided as a convenience because we don't have a design for the general Nav API for this yet. When the more general feature be public we may obsolete this flag in favor of new one.
+    _: u15 = 0,
+};
+
+// Main API
+extern fn zguiBeginMultiSelect(flags: MultiSelectFlags, selection_size: c_int, items_count: c_int) *MultiSelectIO;
+pub const BeginMultiSelect = struct {
+    flags: MultiSelectFlags = .{},
+    selection_size: i32 = -1,
+    items_count: i32 = -1,
+};
+pub fn beginMultiSelect(args: BeginMultiSelect) *MultiSelectIO {
+    return zguiBeginMultiSelect(args.flags, args.selection_size, args.items_count);
+}
+
+extern fn zguiEndMultiSelect() *MultiSelectIO;
+pub const endMultiSelect = zguiEndMultiSelect;
+
+extern fn zguiSetNextItemSelectionUserData(selection_user_data: SelectionUserData) void;
+
+pub fn setNextItemSelectionUserData(selection_user_data: anytype) void {
+    // zguiSetNextItemSelectionUserData(.from(selection_user_data));
+    zguiSetNextItemSelectionUserData(.from(selection_user_data));
+}
+//--------------------------------------------------------------------------------------------------
+//
 // DrawFlags
 //
 //--------------------------------------------------------------------------------------------------
@@ -5104,11 +5223,15 @@ pub const DrawList = *opaque {
     extern fn zguiDrawList_AddResetRenderStateCallback(draw_list: DrawList) void;
 };
 
-fn Vector(comptime T: type) type {
+pub fn Vector(comptime T: type) type {
     return extern struct {
         len: c_int,
         capacity: c_int,
         items: [*]T,
+
+        pub fn slice(self: *@This()) []T {
+            return self.items[0..@intCast(self.len)];
+        }
     };
 }
 
