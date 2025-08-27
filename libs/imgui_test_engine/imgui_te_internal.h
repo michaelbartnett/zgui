@@ -1,6 +1,9 @@
 // dear imgui test engine
 // (internal api)
 
+// This file is governed by the "Dear ImGui Test Engine License".
+// Details of the license are provided in the LICENSE.txt file in the same directory.
+
 #pragma once
 
 #include "imgui_te_coroutine.h"
@@ -153,6 +156,7 @@ struct ImGuiTestEngine
     ImGuiContext*               UiContextActive = nullptr;      // imgui context for testing == UiContextTarget or nullptr
 
     bool                        Started = false;
+    bool                        UiContextHasHooks = false;
     ImU64                       BatchStartTime = 0;
     ImU64                       BatchEndTime = 0;
     int                         FrameCount = 0;
