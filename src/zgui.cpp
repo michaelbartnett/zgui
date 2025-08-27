@@ -2170,6 +2170,26 @@ extern "C"
 
     //--------------------------------------------------------------------------------------------------
     //
+    // Multi-selection
+    //
+    //--------------------------------------------------------------------------------------------------
+    ZGUI_API ImGuiMultiSelectIO *zguiBeginMultiSelect(ImGuiMultiSelectFlags flags, int selection_size, int items_count)
+    {
+        return ImGui::BeginMultiSelect(flags, selection_size, items_count);
+    }
+
+    ZGUI_API ImGuiMultiSelectIO *zguiEndMultiSelect()
+    {
+        return ImGui::EndMultiSelect();
+    }
+
+    ZGUI_API void zguiSetNextItemSelectionUserData(ImGuiSelectionUserData selection_user_data)
+    {
+        return ImGui::SetNextItemSelectionUserData(selection_user_data);
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    //
     // Color Utilities
     //
     //--------------------------------------------------------------------------------------------------
