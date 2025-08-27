@@ -83,6 +83,7 @@ pub fn getCurrentContext() ?Context {
 pub fn deinit() void {
     if (zguiGetCurrentContext() != null) {
         temp_buffer.?.deinit();
+        temp_buffer = null;
         zguiDestroyContext(null);
 
         // Must be after destroy imgui context.
@@ -120,6 +121,7 @@ pub fn initNoContext(allocator: std.mem.Allocator) void {
 pub fn deinitNoContext() void {
     if (temp_buffer) |buf| {
         buf.deinit();
+        temp_buffer = null;
     }
 }
 extern fn zguiCreateContext(shared_font_atlas: ?*const anyopaque) Context;
