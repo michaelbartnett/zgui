@@ -2260,7 +2260,7 @@ pub const DragIntRange2 = struct {
     cfmt_max: ?[:0]const u8 = null,
     flags: SliderFlags = .{},
 };
-pub pub fn dragIntRange2(label: [:0]const u8, args: DragIntRange2) bool {
+pub fn dragIntRange2(label: [:0]const u8, args: DragIntRange2) bool {
     return zguiDragIntRange2(
         label,
         args.current_min,
