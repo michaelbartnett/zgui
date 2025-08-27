@@ -1718,7 +1718,7 @@ extern fn zguiCalcTextSize(
 // Widgets: Main
 //
 //--------------------------------------------------------------------------------------------------
-const Button = struct {
+pub const Button = struct {
     w: f32 = 0.0,
     h: f32 = 0.0,
 };
@@ -1732,7 +1732,7 @@ pub fn smallButton(label: [:0]const u8) bool {
 }
 extern fn zguiSmallButton(label: [*:0]const u8) bool;
 //--------------------------------------------------------------------------------------------------
-const InvisibleButton = struct {
+pub const InvisibleButton = struct {
     w: f32,
     h: f32,
     flags: ButtonFlags = .{},
@@ -1742,7 +1742,7 @@ pub fn invisibleButton(str_id: [:0]const u8, args: InvisibleButton) bool {
 }
 extern fn zguiInvisibleButton(str_id: [*:0]const u8, w: f32, h: f32, flags: ButtonFlags) bool;
 //--------------------------------------------------------------------------------------------------
-const ArrowButton = struct {
+pub const ArrowButton = struct {
     dir: Direction,
 };
 pub fn arrowButton(label: [:0]const u8, args: ArrowButton) bool {
@@ -1750,7 +1750,7 @@ pub fn arrowButton(label: [:0]const u8, args: ArrowButton) bool {
 }
 extern fn zguiArrowButton(label: [*:0]const u8, dir: Direction) bool;
 //--------------------------------------------------------------------------------------------------
-const Image = struct {
+pub const Image = struct {
     w: f32,
     h: f32,
     uv0: [2]f32 = .{ 0.0, 0.0 },
@@ -1771,7 +1771,7 @@ extern fn zguiImage(
     border_col: *const [4]f32,
 ) void;
 //--------------------------------------------------------------------------------------------------
-const ImageButton = struct {
+pub const ImageButton = struct {
     w: f32,
     h: f32,
     uv0: [2]f32 = .{ 0.0, 0.0 },
@@ -1836,7 +1836,7 @@ pub fn checkboxBits(label: [:0]const u8, args: struct {
 }
 extern fn zguiCheckboxBits(label: [*:0]const u8, bits: *c_uint, bits_value: c_uint) bool;
 //--------------------------------------------------------------------------------------------------
-const ProgressBar = struct {
+pub const ProgressBar = struct {
     fraction: f32,
     w: f32 = -f32_min,
     h: f32 = 0.0,
@@ -1853,7 +1853,7 @@ pub const textLink = zguiTextLink;
 extern fn zguiTextLinkOpenURL(label: [*:0]const u8, url: ?[*:0]const u8) void;
 pub const textLinkOpenURL = zguiTextLinkOpenURL;
 //--------------------------------------------------------------------------------------------------
-const PlotArgs = struct {
+pub const PlotArgs = struct {
     v: [*]f32,
     v_count: c_int,
     v_offset: c_int = 0,
@@ -2005,7 +2005,7 @@ pub const ComboFlags = packed struct(c_int) {
     _padding: u24 = 0,
 };
 //--------------------------------------------------------------------------------------------------
-const BeginCombo = struct {
+pub const BeginCombo = struct {
     preview_value: [*:0]const u8,
     flags: ComboFlags = .{},
 };
@@ -2022,7 +2022,7 @@ extern fn zguiEndCombo() void;
 // Widgets: Drag Sliders
 //
 //--------------------------------------------------------------------------------------------------
-fn DragFloatGen(comptime T: type) type {
+pub fn DragFloatGen(comptime T: type) type {
     return struct {
         v: *T,
         speed: f32 = 1.0,
@@ -2033,7 +2033,7 @@ fn DragFloatGen(comptime T: type) type {
     };
 }
 //--------------------------------------------------------------------------------------------------
-const DragFloat = DragFloatGen(f32);
+pub const DragFloat = DragFloatGen(f32);
 pub fn dragFloat(label: [:0]const u8, args: DragFloat) bool {
     return zguiDragFloat(
         label,
@@ -2069,7 +2069,7 @@ extern fn zguiDragFloat2(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragFloat3 = DragFloatGen([3]f32);
+pub const DragFloat3 = DragFloatGen([3]f32);
 pub fn dragFloat3(label: [:0]const u8, args: DragFloat3) bool {
     return zguiDragFloat3(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -2083,7 +2083,7 @@ extern fn zguiDragFloat3(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragFloat4 = DragFloatGen([4]f32);
+pub const DragFloat4 = DragFloatGen([4]f32);
 pub fn dragFloat4(label: [:0]const u8, args: DragFloat4) bool {
     return zguiDragFloat4(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -2097,7 +2097,7 @@ extern fn zguiDragFloat4(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragFloatRange2 = struct {
+pub const DragFloatRange2 = struct {
     current_min: *f32,
     current_max: *f32,
     speed: f32 = 1.0,
@@ -2132,7 +2132,7 @@ extern fn zguiDragFloatRange2(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-fn DragIntGen(comptime T: type) type {
+pub fn DragIntGen(comptime T: type) type {
     return struct {
         v: *T,
         speed: f32 = 1.0,
@@ -2143,7 +2143,7 @@ fn DragIntGen(comptime T: type) type {
     };
 }
 //--------------------------------------------------------------------------------------------------
-const DragInt = DragIntGen(i32);
+pub const DragInt = DragIntGen(i32);
 pub fn dragInt(label: [:0]const u8, args: DragInt) bool {
     return zguiDragInt(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -2157,7 +2157,7 @@ extern fn zguiDragInt(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragInt2 = DragIntGen([2]i32);
+pub const DragInt2 = DragIntGen([2]i32);
 pub fn dragInt2(label: [:0]const u8, args: DragInt2) bool {
     return zguiDragInt2(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -2171,7 +2171,7 @@ extern fn zguiDragInt2(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragInt3 = DragIntGen([3]i32);
+pub const DragInt3 = DragIntGen([3]i32);
 pub fn dragInt3(label: [:0]const u8, args: DragInt3) bool {
     return zguiDragInt3(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -2185,7 +2185,7 @@ extern fn zguiDragInt3(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragInt4 = DragIntGen([4]i32);
+pub const DragInt4 = DragIntGen([4]i32);
 pub fn dragInt4(label: [:0]const u8, args: DragInt4) bool {
     return zguiDragInt4(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -2199,7 +2199,7 @@ extern fn zguiDragInt4(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragIntRange2 = struct {
+pub const DragIntRange2 = struct {
     current_min: *i32,
     current_max: *i32,
     speed: f32 = 1.0,
@@ -2234,7 +2234,7 @@ extern fn zguiDragIntRange2(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-fn DragScalarGen(comptime T: type) type {
+pub fn DragScalarGen(comptime T: type) type {
     return struct {
         v: *T,
         speed: f32 = 1.0,
@@ -2267,7 +2267,7 @@ extern fn zguiDragScalar(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-fn DragScalarNGen(comptime T: type) type {
+pub fn DragScalarNGen(comptime T: type) type {
     const ScalarType = @typeInfo(T).array.child;
     return struct {
         v: *T,
@@ -2309,7 +2309,7 @@ extern fn zguiDragScalarN(
 // Widgets: Regular Sliders
 //
 //--------------------------------------------------------------------------------------------------
-fn SliderFloatGen(comptime T: type) type {
+pub fn SliderFloatGen(comptime T: type) type {
     return struct {
         v: *T,
         min: f32,
@@ -2368,7 +2368,7 @@ extern fn zguiSliderFloat4(
 ) bool;
 
 //--------------------------------------------------------------------------------------------------
-fn SliderIntGen(comptime T: type) type {
+pub fn SliderIntGen(comptime T: type) type {
     return struct {
         v: *T,
         min: i32,
@@ -2427,7 +2427,7 @@ extern fn zguiSliderInt4(
 ) bool;
 
 //--------------------------------------------------------------------------------------------------
-fn SliderScalarGen(comptime T: type) type {
+pub fn SliderScalarGen(comptime T: type) type {
     return struct {
         v: *T,
         min: T,
@@ -2458,7 +2458,7 @@ extern fn zguiSliderScalar(
 ) bool;
 
 //--------------------------------------------------------------------------------------------------
-fn SliderScalarNGen(comptime T: type) type {
+pub fn SliderScalarNGen(comptime T: type) type {
     const ScalarType = @typeInfo(T).array.child;
     return struct {
         v: *T,
@@ -2546,7 +2546,7 @@ extern fn zguiVSliderInt(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-fn VSliderScalarGen(comptime T: type) type {
+pub fn VSliderScalarGen(comptime T: type) type {
     return struct {
         w: f32,
         h: f32,
@@ -2582,7 +2582,7 @@ extern fn zguiVSliderScalar(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const SliderAngle = struct {
+pub const SliderAngle = struct {
     vrad: *f32,
     deg_min: f32 = -360.0,
     deg_max: f32 = 360.0,
@@ -2800,7 +2800,7 @@ extern fn zguiInputFloat(
 ) bool;
 
 //--------------------------------------------------------------------------------------------------
-fn InputFloatGen(comptime T: type) type {
+pub fn InputFloatGen(comptime T: type) type {
     return struct {
         v: *T,
         cfmt: [:0]const u8 = "%.3f",
@@ -2855,7 +2855,7 @@ extern fn zguiInputInt(
 ) bool;
 
 //--------------------------------------------------------------------------------------------------
-fn InputIntGen(comptime T: type) type {
+pub fn InputIntGen(comptime T: type) type {
     return struct {
         v: *T,
         flags: InputTextFlags = .{},
@@ -2877,7 +2877,7 @@ pub fn inputInt4(label: [:0]const u8, args: InputIntGen([4]i32)) bool {
 extern fn zguiInputInt4(label: [*:0]const u8, v: *[4]c_int, flags: InputTextFlags) bool;
 
 //--------------------------------------------------------------------------------------------------
-const InputDouble = struct {
+pub const InputDouble = struct {
     v: *f64,
     step: f64 = 0.0,
     step_fast: f64 = 0.0,
@@ -2896,7 +2896,7 @@ extern fn zguiInputDouble(
     flags: InputTextFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-fn InputScalarGen(comptime T: type) type {
+pub fn InputScalarGen(comptime T: type) type {
     return struct {
         v: *T,
         step: ?T = null,
@@ -2926,7 +2926,7 @@ extern fn zguiInputScalar(
     flags: InputTextFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-fn InputScalarNGen(comptime T: type) type {
+pub fn InputScalarNGen(comptime T: type) type {
     const ScalarType = @typeInfo(T).array.child;
     return struct {
         v: *T,
@@ -3008,7 +3008,7 @@ pub const ColorEditFlags = packed struct(c_int) {
     };
 };
 //--------------------------------------------------------------------------------------------------
-const ColorEdit3 = struct {
+pub const ColorEdit3 = struct {
     col: *[3]f32,
     flags: ColorEditFlags = .{},
 };
@@ -3017,7 +3017,7 @@ pub fn colorEdit3(label: [:0]const u8, args: ColorEdit3) bool {
 }
 extern fn zguiColorEdit3(label: [*:0]const u8, col: *[3]f32, flags: ColorEditFlags) bool;
 //--------------------------------------------------------------------------------------------------
-const ColorEdit4 = struct {
+pub const ColorEdit4 = struct {
     col: *[4]f32,
     flags: ColorEditFlags = .{},
 };
@@ -3026,7 +3026,7 @@ pub fn colorEdit4(label: [:0]const u8, args: ColorEdit4) bool {
 }
 extern fn zguiColorEdit4(label: [*:0]const u8, col: *[4]f32, flags: ColorEditFlags) bool;
 //--------------------------------------------------------------------------------------------------
-const ColorPicker3 = struct {
+pub const ColorPicker3 = struct {
     col: *[3]f32,
     flags: ColorEditFlags = .{},
 };
@@ -3035,7 +3035,7 @@ pub fn colorPicker3(label: [:0]const u8, args: ColorPicker3) bool {
 }
 extern fn zguiColorPicker3(label: [*:0]const u8, col: *[3]f32, flags: ColorEditFlags) bool;
 //--------------------------------------------------------------------------------------------------
-const ColorPicker4 = struct {
+pub const ColorPicker4 = struct {
     col: *[4]f32,
     flags: ColorEditFlags = .{},
     ref_col: ?[*]const f32 = null,
@@ -3055,7 +3055,7 @@ extern fn zguiColorPicker4(
     ref_col: ?[*]const f32,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const ColorButton = struct {
+pub const ColorButton = struct {
     col: [4]f32,
     flags: ColorEditFlags = .{},
     w: f32 = 0.0,
@@ -3178,7 +3178,7 @@ pub fn collapsingHeaderStatePtr(label: [:0]const u8, args: CollapsingHeaderState
 extern fn zguiCollapsingHeader(label: [*:0]const u8, flags: TreeNodeFlags) bool;
 extern fn zguiCollapsingHeaderStatePtr(label: [*:0]const u8, pvisible: *bool, flags: TreeNodeFlags) bool;
 //--------------------------------------------------------------------------------------------------
-const SetNextItemOpen = struct {
+pub const SetNextItemOpen = struct {
     is_open: bool,
     cond: Condition = .none,
 };
@@ -3201,7 +3201,7 @@ pub const SelectableFlags = packed struct(c_int) {
     _padding: u26 = 0,
 };
 //--------------------------------------------------------------------------------------------------
-const Selectable = struct {
+pub const Selectable = struct {
     selected: bool = false,
     flags: SelectableFlags = .{},
     w: f32 = 0,
@@ -3218,7 +3218,7 @@ extern fn zguiSelectable(
     h: f32,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const SelectableStatePtr = struct {
+pub const SelectableStatePtr = struct {
     pselected: *bool,
     flags: SelectableFlags = .{},
     w: f32 = 0,
@@ -3239,7 +3239,7 @@ extern fn zguiSelectableStatePtr(
 // Widgets: List Boxes
 //
 //--------------------------------------------------------------------------------------------------
-const BeginListBox = struct {
+pub const BeginListBox = struct {
     w: f32 = 0.0,
     h: f32 = 0.0,
 };
@@ -3737,7 +3737,7 @@ pub fn beginMenu(label: [:0]const u8, enabled: bool) bool {
 /// `pub fn endMenu() void`
 pub const endMenu = zguiEndMenu;
 
-const MenuItem = struct {
+pub const MenuItem = struct {
     shortcut: ?[:0]const u8 = null,
     selected: bool = false,
     enabled: bool = true,
@@ -3746,7 +3746,7 @@ pub fn menuItem(label: [:0]const u8, args: MenuItem) bool {
     return zguiMenuItem(label, if (args.shortcut) |s| s.ptr else null, args.selected, args.enabled);
 }
 
-const MenuItemPtr = struct {
+pub const MenuItemPtr = struct {
     shortcut: ?[:0]const u8 = null,
     selected: *bool,
     enabled: bool = true,
@@ -3852,7 +3852,7 @@ pub const TabItemFlags = packed struct(c_int) {
 pub fn beginTabBar(label: [:0]const u8, flags: TabBarFlags) bool {
     return zguiBeginTabBar(label, flags);
 }
-const BeginTabItem = struct {
+pub const BeginTabItem = struct {
     p_open: ?*bool = null,
     flags: TabItemFlags = .{},
 };
