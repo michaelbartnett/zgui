@@ -400,6 +400,10 @@ pub const io = struct {
     pub const setConfigFlags = zguiIoSetConfigFlags;
     extern fn zguiIoSetConfigFlags(flags: ConfigFlags) void;
 
+    /// `pub fn getConfigFlags() ConfigFlags`
+    pub const getConfigFlags = zguiIoGetConfigFlags;
+    extern fn zguiIoGetConfigFlags() ConfigFlags;
+
     /// `pub fn setDeltaTime(delta_time: f32) void`
     pub const setDeltaTime = zguiIoSetDeltaTime;
     extern fn zguiIoSetDeltaTime(delta_time: f32) void;
@@ -3607,6 +3611,11 @@ pub const isAnyItemHovered = zguiIsAnyItemHovered;
 pub const isAnyItemActive = zguiIsAnyItemActive;
 /// `pub fn isAnyItemFocused() bool`
 pub const isAnyItemFocused = zguiIsAnyItemFocused;
+/// `pub fn calcItemWidth() f32`
+pub const calcItemWidth = zguiCalcItemWidth;
+pub fn hashStr(str: []const u8) Ident {
+    return zguiHashStr(str.ptr, str.len);
+}
 extern fn zguiIsMouseDown(mouse_button: MouseButton) bool;
 extern fn zguiIsMouseClicked(mouse_button: MouseButton) bool;
 extern fn zguiIsMouseReleased(mouse_button: MouseButton) bool;
@@ -3627,6 +3636,8 @@ extern fn zguiIsItemToggledOpen() bool;
 extern fn zguiIsAnyItemHovered() bool;
 extern fn zguiIsAnyItemActive() bool;
 extern fn zguiIsAnyItemFocused() bool;
+extern fn zguiHashStr(data: [*]const u8, len: usize) Ident;
+extern fn zguiCalcItemWidth() f32;
 
 pub const isRectVisible = zguiIsRectVisible;
 extern fn zguiIsRectVisible(pos: *[2]f32) bool;
