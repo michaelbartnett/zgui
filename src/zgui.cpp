@@ -1820,6 +1820,15 @@ extern "C"
         return ImGui::IsAnyItemFocused();
     }
 
+    ZGUI_API ImGuiID zguiHashStr(const char *ptr, const size_t len) {
+        return ImHashStr(ptr, len);
+    }
+
+    ZGUI_API float zguiCalcItemWidth()
+    {
+        return ImGui::CalcItemWidth();
+    }
+
     ZGUI_API void zguiGetContentRegionAvail(float pos[2])
     {
         const ImVec2 p = ImGui::GetContentRegionAvail();
