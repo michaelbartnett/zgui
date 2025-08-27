@@ -2317,6 +2317,19 @@ pub fn dragScalar(label: [:0]const u8, comptime T: type, args: DragScalarGen(T))
         args.flags,
     );
 }
+/// ```
+/// fn zguiDragScalarOpaque(
+///     label: [*:0]const u8,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     speed: f32,
+///     pmin: ?*const anyopaque,
+///     pmax: ?*const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: SliderFlags,
+/// ) bool;
+/// ```
+pub const dragScalarOpaque = zguiDragScalar;
 extern fn zguiDragScalar(
     label: [*:0]const u8,
     data_type: DataType,
@@ -2354,6 +2367,20 @@ pub fn dragScalarN(label: [:0]const u8, comptime T: type, args: DragScalarNGen(T
         args.flags,
     );
 }
+/// ```
+/// fn dragScalarNOpaque(
+///     label: [*:0]const u8,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     components: i32,
+///     speed: f32,
+///     pmin: ?*const anyopaque,
+///     pmax: ?*const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: SliderFlags,
+/// ) bool
+/// ```
+pub const dragScalarNOpaque = zguiDragScalarN;
 extern fn zguiDragScalarN(
     label: [*:0]const u8,
     data_type: DataType,
@@ -2508,6 +2535,18 @@ pub fn sliderScalar(label: [:0]const u8, comptime T: type, args: SliderScalarGen
         args.flags,
     );
 }
+/// ```
+/// fn sliderScalarOpaque(
+///     label: [*:0]const u8,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     pmin: *const anyopaque,
+///     pmax: *const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: SliderFlags,
+/// ) bool;
+/// ```
+pub const sliderScalarOpaque = zguiSliderScalar;
 extern fn zguiSliderScalar(
     label: [*:0]const u8,
     data_type: DataType,
@@ -2543,6 +2582,19 @@ pub fn sliderScalarN(label: [:0]const u8, comptime T: type, args: SliderScalarNG
         args.flags,
     );
 }
+/// ```
+/// fn sliderScalarNOpaque(
+///     label: [*:0]const u8,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     components: i32,
+///     pmin: *const anyopaque,
+///     pmax: *const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: SliderFlags,
+/// ) bool;
+/// ```
+pub const sliderScalarNOpaque = zguiSliderScalarN;
 extern fn zguiSliderScalarN(
     label: [*:0]const u8,
     data_type: DataType,
@@ -2631,6 +2683,20 @@ pub fn vsliderScalar(label: [:0]const u8, comptime T: type, args: VSliderScalarG
         args.flags,
     );
 }
+/// ```
+/// fn vsliderScalarOpaque(
+///     label: [*:0]const u8,
+///     w: f32,
+///     h: f32,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     pmin: *const anyopaque,
+///     pmax: *const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: SliderFlags,
+/// ) bool;
+/// ```
+pub const vsliderScalarOpaque = zguiVSliderScalar;
 extern fn zguiVSliderScalar(
     label: [*:0]const u8,
     w: f32,
@@ -2985,6 +3051,18 @@ pub fn inputScalar(label: [:0]const u8, comptime T: type, args: InputScalarGen(T
         args.flags,
     );
 }
+/// ```
+/// fn zguiInputScalarOpaque(
+///     label: [*:0]const u8,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     pstep: ?*const anyopaque,
+///     pstep_fast: ?*const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: InputTextFlags,
+/// ) bool;
+/// ```
+pub const inputScalarOpaque = zguiInputScalar;
 extern fn zguiInputScalar(
     label: [*:0]const u8,
     data_type: DataType,
@@ -3019,6 +3097,19 @@ pub fn inputScalarN(label: [:0]const u8, comptime T: type, args: InputScalarNGen
         args.flags,
     );
 }
+/// ```
+/// fn inputScalarN(
+///     label: [*:0]const u8,
+///     data_type: DataType,
+///     pdata: *anyopaque,
+///     components: i32,
+///     pstep: ?*const anyopaque,
+///     pstep_fast: ?*const anyopaque,
+///     cfmt: ?[*:0]const u8,
+///     flags: InputTextFlags,
+/// ) bool;
+/// ```
+pub const inputScalarNOpaque = zguiInputScalarN;
 extern fn zguiInputScalarN(
     label: [*:0]const u8,
     data_type: DataType,
