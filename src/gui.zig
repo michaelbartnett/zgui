@@ -2646,13 +2646,18 @@ pub const InputTextFlags = packed struct(c_int) {
     display_empty_ref_val: bool = false,
     no_horizontal_scroll: bool = false,
     no_undo_redo: bool = false,
+
+    // Elide display / Alignment
+    elide_left: bool = false,
+
+    // Callback features
     callback_completion: bool = false,
     callback_history: bool = false,
     callback_always: bool = false,
     callback_char_filter: bool = false,
     callback_resize: bool = false,
     callback_edit: bool = false,
-    _padding: u9 = 0,
+    _padding: u8 = 0,
 };
 //--------------------------------------------------------------------------------------------------
 pub const InputTextCallbackData = extern struct {
