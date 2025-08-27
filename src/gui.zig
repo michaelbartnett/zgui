@@ -384,6 +384,10 @@ pub const io = struct {
     pub const setConfigFlags = zguiIoSetConfigFlags;
     extern fn zguiIoSetConfigFlags(flags: ConfigFlags) void;
 
+    /// `pub fn getConfigFlags() ConfigFlags`
+    pub const getConfigFlags = zguiIoGetConfigFlags;
+    extern fn zguiIoGetConfigFlags() ConfigFlags;
+
     /// `pub fn setDeltaTime(delta_time: f32) void`
     pub const setDeltaTime = zguiIoSetDeltaTime;
     extern fn zguiIoSetDeltaTime(delta_time: f32) void;
