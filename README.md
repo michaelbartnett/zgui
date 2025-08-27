@@ -18,7 +18,7 @@ Easy to use, hand-crafted API with default arguments, named parameters and Zig s
 
 * [ImGui](https://github.com/ocornut/imgui/tree/v1.92.2b-docking) `1.92.2b-docking`
 * [ImGui test engine](https://github.com/ocornut/imgui_test_engine/tree/v1.92.2)  `1.92.2`
-* [ImPlot](https://github.com/epezent/implot) `O.17`
+* [ImPlot](https://github.com/epezent/implot/tree/3da8bd34299965d3b0ab124df743fe3e076fa222) `3da8bd3`
 * [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) `1.89 WIP`
 * [ImGuiNodeEditor](https://github.com/thedmd/imgui-node-editor/tree/v0.9.3) `O.9.3`
 
