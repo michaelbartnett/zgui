@@ -54,6 +54,10 @@ extern "C"
         ImGui::SetNextWindowContentSize({w, h});
     }
 
+    ZGUI_API void zguiSetNextWindowSizeConstraints(const float size_min[2], const float size_max[2], const ImGuiSizeCallback custom_callback, void *custom_callback_data) {
+        ImGui::SetNextWindowSizeConstraints({size_min[0], size_min[1]}, {size_max[0], size_max[1]}, custom_callback, custom_callback_data);
+    }
+
     ZGUI_API void zguiSetNextWindowCollapsed(bool collapsed, ImGuiCond cond)
     {
         ImGui::SetNextWindowCollapsed(collapsed, cond);

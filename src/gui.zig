@@ -760,6 +760,37 @@ extern fn zguiSetNextWindowSize(w: f32, h: f32, cond: Condition) void;
 extern fn zguiSetNextWindowContentSize(w: f32, h: f32) void;
 pub const setNextWindowContentSize = zguiSetNextWindowContentSize;
 //--------------------------------------------------------------------------------------------------
+// Resizing callback data to apply custom constraint. As enabled by SetNextWindowSizeConstraints(). Callback is called during the next Begin().
+// NB: For basic min/max size constraint on each axis you don't need to use the callback! The SetNextWindowSizeConstraints() parameters are enough.
+pub const SizeCallbackData = extern struct {
+    user_data: ?*anyopaque, // Read-only.   What user passed to SetNextWindowSizeConstraints(). Generally store an integer or float in here (need reinterpret_cast<>).
+    pos: [2]f32, // Read-only.   Window position, for reference.
+    current_size: [2]f32, // Read-only.   Current window size.
+    desired_size: [2]f32, // Read-write.  Desired size, based on user's mouse position. Write to this field to restrain resizing.
+};
+pub const SizeCallback = fn (data: *SizeCallbackData) callconv(.C) void;
+
+pub const WindowSizeConstraints = struct {
+    size_min: [2]f32 = .{ 0, 0 },
+    size_max: [2]f32 = .{ 0, 0 },
+    custom_callback: ?*const SizeCallback = null,
+    custom_callback_data: ?*anyopaque = null,
+};
+extern fn zguiSetNextWindowSizeConstraints(
+    size_min: *const [2]f32,
+    size_max: *const [2]f32,
+    custom_callback: ?*const SizeCallback,
+    custom_callback_data: ?*anyopaque,
+) void;
+
+// set next window size limits. use 0.0f or FLT_MAX if you don't want
+// limits. Use -1 for both min and max of same axis to preserve current
+// size (which itself is a constraint). Use callback to apply
+// non-trivial programmatic constraints.
+pub fn setNextWindowSizeConstraints(args: WindowSizeConstraints) void {
+    zguiSetNextWindowSizeConstraints(&args.size_min, &args.size_max, args.custom_callback, args.custom_callback_data);
+}
+//--------------------------------------------------------------------------------------------------
 const SetNextWindowCollapsed = struct {
     collapsed: bool,
     cond: Condition = .none,
