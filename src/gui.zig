@@ -286,7 +286,7 @@ pub const io = struct {
             fontdata.ptr,
             @intCast(fontdata.len),
             size_pixels,
-            if (config) |c| &c else null,S
+            if (config) |c| &c else null,
             ranges,
         );
     }
