@@ -77,9 +77,6 @@ pub fn initWithExistingContext(allocator: std.mem.Allocator, ctx: Context) void 
         te.init();
     }
 }
-pub fn getCurrentContext() ?Context {
-    return zguiGetCurrentContext();
-}
 pub fn deinit() void {
     if (zguiGetCurrentContext() != null) {
         temp_buffer.?.deinit();
@@ -122,6 +119,23 @@ pub fn deinitNoContext() void {
         buf.deinit();
     }
 }
+
+pub fn createContext() Context {
+    return zguiCreateContext(null);
+}
+
+pub fn destroyContext(ctx: Context) void {
+    return zguiDestroyContext(ctx);
+}
+
+pub fn getCurrentContext() ?Context {
+    return zguiGetCurrentContext();
+}
+
+pub fn setCurrentContext(ctx: ?Context) void {
+    return zguiSetCurrentContext(ctx);
+}
+
 extern fn zguiCreateContext(shared_font_atlas: ?*const anyopaque) Context;
 extern fn zguiDestroyContext(ctx: ?Context) void;
 extern fn zguiGetCurrentContext() ?Context;
@@ -270,7 +284,7 @@ pub const io = struct {
             fontdata.ptr,
             @intCast(fontdata.len),
             size_pixels,
-            if (config) |c| &c else null,
+            if (config) |c| &c else null,S
             ranges,
         );
     }
