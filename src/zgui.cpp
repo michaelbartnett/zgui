@@ -837,9 +837,9 @@ extern "C"
         return ImGui::SliderAngle(label, v_rad, v_degrees_min, v_degrees_max, format, flags);
     }
 
-    ZGUI_API ImGuiInputTextCallbackData zguiInputTextCallbackData_Init(void)
+    ZGUI_API void zguiInputTextCallbackData_Init(ImGuiInputTextCallbackData *data)
     {
-        return ImGuiInputTextCallbackData();
+        IM_PLACEMENT_NEW(data) ImGuiInputTextCallbackData();
     }
 
     ZGUI_API void zguiInputTextCallbackData_DeleteChars(
@@ -1233,9 +1233,9 @@ extern "C"
         ImGui::EndDisabled();
     }
 
-    ZGUI_API ImGuiListClipper zguiListClipper_Init()
+    ZGUI_API void zguiListClipper_Init(ImGuiListClipper *data)
     {
-        return ImGuiListClipper();
+        IM_PLACEMENT_NEW(data) ImGuiListClipper();
     }
 
     ZGUI_API void zguiListClipper_Begin(ImGuiListClipper *clipper, int items_count, float items_height)
@@ -1263,9 +1263,9 @@ extern "C"
         return &ImGui::GetStyle();
     }
 
-    ZGUI_API ImGuiStyle zguiStyle_Init(void)
+    ZGUI_API void zguiStyle_Init(ImGuiStyle *style)
     {
-        return ImGuiStyle();
+        IM_PLACEMENT_NEW(style) ImGuiStyle();
     }
 
     ZGUI_API void zguiStyle_ScaleAllSizes(ImGuiStyle *style, float scale_factor)
@@ -1542,9 +1542,9 @@ extern "C"
         return ImGui::GetIO().Fonts->AddFontFromMemoryTTF(font_data, font_size, size_pixels, &config, nullptr);
     }
 
-    ZGUI_API ImFontConfig zguiFontConfig_Init(void)
+    ZGUI_API void zguiFontConfig_Init(ImFontConfig* font_config)
     {
-        return ImFontConfig();
+        IM_PLACEMENT_NEW(font_config) ImFontConfig();
     }
 
     ZGUI_API ImFont *zguiIoGetFont(unsigned int index)
@@ -1574,7 +1574,7 @@ extern "C"
 
     ZGUI_API ImTextureID zguiIoGetFontsTexId(void)
     {
-        return ImGui::GetIO().Fonts->TexID;
+        return ImGui::GetIO().Fonts->TexID.GetTexID();
     }
 
     // Glyph Ranges

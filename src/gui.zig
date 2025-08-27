@@ -240,9 +240,11 @@ pub const FontConfig = extern struct {
     dst_font: *Font,
 
     pub fn init() FontConfig {
-        return zguiFontConfig_Init();
+        var result: FontConfig = undefined;
+        zguiFontConfig_Init(&result);
+        return result;
     }
-    extern fn zguiFontConfig_Init() FontConfig;
+    extern fn zguiFontConfig_Init(ptr: *FontConfig) void;
 };
 
 pub const io = struct {
@@ -1134,8 +1136,12 @@ pub const ListClipper = extern struct {
     StartPosY: f32,
     TempData: *anyopaque,
 
-    pub const init = zguiListClipper_Init;
-    extern fn zguiListClipper_Init() ListClipper;
+    pub fn init() ListClipper {
+        var result: ListClipper = undefined;
+        zguiListClipper_Init(&result);
+        return result;
+    }
+    extern fn zguiListClipper_Init(ptr: *ListClipper) void;
 
     pub fn begin(self: *ListClipper, items_count: ?i32, items_height: ?f32) void {
         zguiListClipper_Begin(self, items_count orelse std.math.maxInt(i32), items_height orelse -1.0);
@@ -1217,8 +1223,12 @@ pub const Style = extern struct {
     hover_flags_for_tooltip_nav: HoveredFlags,
 
     /// `pub fn init() Style`
-    pub const init = zguiStyle_Init;
-    extern fn zguiStyle_Init() Style;
+    pub fn init() Style {
+        var result: Style = undefined;
+        zguiStyle_Init(&result);
+        return result;
+    }
+    extern fn zguiStyle_Init(ptr: *Style) void;
 
     /// `pub fn scaleAllSizes(style: *Style, scale_factor: f32) void`
     pub const scaleAllSizes = zguiStyle_ScaleAllSizes;
@@ -2710,9 +2720,12 @@ pub const InputTextCallbackData = extern struct {
     selection_start: i32,
     selection_end: i32,
 
-    /// `pub fn init() InputTextCallbackData`
-    pub const init = zguiInputTextCallbackData_Init;
-    extern fn zguiInputTextCallbackData_Init() InputTextCallbackData;
+    pub fn init() InputTextCallbackData {
+        var result: InputTextCallbackData = undefined;
+        zguiInputTextCallbackData_Init(&result);
+        return result;
+    }
+    extern fn zguiInputTextCallbackData_Init(ptr: *InputTextCallbackData) void;
 
     /// `pub fn deleteChars(data: *InputTextCallbackData, pos: i32, bytes_count: i32) void`
     pub const deleteChars = zguiInputTextCallbackData_DeleteChars;
