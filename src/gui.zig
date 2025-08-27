@@ -186,58 +186,63 @@ extern fn zguiSetAllocatorFunctions(
 pub const ConfigFlags = packed struct(c_int) {
     nav_enable_keyboard: bool = false,
     nav_enable_gamepad: bool = false,
-    nav_enable_set_mouse_pos: bool = false,
-    nav_no_capture_keyboard: bool = false,
+    _obsolete_nav_enable_set_mouse_pos: bool = false,
+    _obsolete_nav_no_capture_keyboard: bool = false,
     no_mouse: bool = false,
     no_mouse_cursor_change: bool = false,
     no_keyboard: bool = false,
-    dock_enable: bool = false,
+    docking_enable: bool = false,
     _pading0: u2 = 0,
-    viewport_enable: bool = false,
+    viewports_enable: bool = false,
     _pading1: u3 = 0,
-    dpi_enable_scale_viewport: bool = false,
-    dpi_enable_scale_fonts: bool = false,
-    user_storage: u4 = 0,
+    _padding2: u6 = 0,
     is_srgb: bool = false,
     is_touch_screen: bool = false,
     _padding: u10 = 0,
+
+    pub const none: ConfigFlags = @bitCast(0);
 };
 
-pub const FontBuilderFlags = packed struct(c_uint) {
-    no_hinting: bool = false,
-    no_auto_hint: bool = false,
-    force_auto_hint: bool = false,
-    light_hinting: bool = false,
-    mono_hinting: bool = false,
-    bold: bool = false,
-    oblique: bool = false,
-    monochrome: bool = false,
-    load_color: bool = false,
-    bitmap: bool = false,
-    _padding: u22 = 0,
+pub const FontFlags = packed struct(c_uint) {
+    no_load_error: bool = false,
+    no_load_glyphs: bool = false,
+    lock_baked_sizes: bool = false,
+    _padding: u29 = 0,
+
+    pub const none: FontFlags = @bitCast(0);
 };
 
 pub const FontConfig = extern struct {
+    // Data Source
+    name: [40]u8,
     font_data: ?*anyopaque,
     font_data_size: c_int,
     font_data_owned_by_atlas: bool,
+
+    // Options
     merge_mode: bool,
     pixel_snap_h: bool,
-    font_no: c_int,
-    oversample_h: c_int,
-    oversample_v: c_int,
+    pixel_snap_v: bool,
+    oversample_h: i8,
+    oversample_v: i8,
+    ellipsis_char: Wchar,
     size_pixels: f32,
-    glyph_extra_spacing: [2]f32,
+    glyph_ranges: *const Wchar,
+    glyph_exclude_ranges: *const Wchar,
     glyph_offset: [2]f32,
-    glyph_ranges: [*c]u16,
     glyph_min_advance_x: f32,
     glyph_max_advance_x: f32,
-    font_builder_flags: FontBuilderFlags,
+    glyph_extra_advance_x: f32,
+    font_no: u32,
+    font_builder_flags: c_uint,
     rasterizer_multiply: f32,
     rasterizer_density: f32,
-    ellipsis_char: Wchar,
-    name: [40]u8,
+
+    // [Internal]
+    flags: FontFlags,
     dst_font: *Font,
+    font_loader: *const anyopaque, // ImFontLoader
+    font_loader_data: *anyopaque,
 
     pub fn init() FontConfig {
         var result: FontConfig = undefined;
@@ -459,10 +464,13 @@ pub const DrawData = *extern struct {
     display_pos: [2]f32,
     display_size: [2]f32,
     framebuffer_scale: [2]f32,
+    owner_viewport: Viewport,
+    textures: *Vector(*TextureData),
 };
 pub const Font = *opaque {};
 pub const Ident = u32;
 pub const TextureIdent = *anyopaque;
+pub const TextureData = opaque{};
 pub const Wchar = if (@import("zgui_options").use_wchar32) u32 else u16;
 pub const Key = enum(c_int) {
     none = 0,
@@ -650,7 +658,15 @@ pub const WindowFlags = packed struct(c_int) {
     no_nav_focus: bool = false,
     unsaved_document: bool = false,
     no_docking: bool = false,
-    _padding: u12 = 0,
+    _reserved0: u3 = 0,
+    _dock_node_host: bool = false,
+    _child_window: bool = false,
+    _tooltip: bool = false,
+    _popup: bool = false,
+    _modal: bool = false,
+    _child_menu: bool = false,
+
+    _padding: u3 = 0,
 
     pub const no_nav = WindowFlags{ .no_nav_inputs = true, .no_nav_focus = true };
     pub const no_decoration = WindowFlags{
@@ -677,20 +693,28 @@ pub const ChildFlags = packed struct(c_int) {
     frame_style: bool = false,
     nav_flattened: bool = false,
     _padding: u23 = 0,
+
+    pub const none: ChildFlags = @bitCast(0);
 };
 
 //--------------------------------------------------------------------------------------------------
 pub const SliderFlags = packed struct(c_int) {
-    _reserved0: bool = false,
-    _reserved1: bool = false,
-    _reserved2: bool = false,
-    _reserved3: bool = false,
-    always_clamp: bool = false,
+    _reserved0: u5 = 0,
     logarithmic: bool = false,
     no_round_to_format: bool = false,
     no_input: bool = false,
     wrap_around: bool = false,
+    clamp_on_input: bool = false,
+    clamp_zero_range: bool = false,
+    no_speed_tweaks: bool = false,
     _padding: u23 = 0,
+
+    pub const always_clamp: SliderFlags = .{
+        .clamp_on_input = true,
+        .clamp_zero_range = true,
+    };
+
+    pub const invalid_mask: SliderFlags = @bitCast(0x7000000F);
 };
 //--------------------------------------------------------------------------------------------------
 pub const ButtonFlags = packed struct(c_int) {
@@ -698,6 +722,13 @@ pub const ButtonFlags = packed struct(c_int) {
     mouse_button_right: bool = false,
     mouse_button_middle: bool = false,
     _padding: u29 = 0,
+
+    pub const none: ButtonFlags = @bitCast(0);
+    pub const mouse_button_mask: ButtonFlags = .{
+        .mouse_button_left = true,
+        .mouse_button_right = true,
+        .mouse_button_middle = true,
+    };
 };
 //--------------------------------------------------------------------------------------------------
 pub const Direction = enum(c_int) {
@@ -943,6 +974,7 @@ pub const FocusedFlags = packed struct(c_int) {
     dock_hierarchy: bool = false,
     _padding: u27 = 0,
 
+    pub const none: FocusedFlags = @bitCast(0);
     pub const root_and_child_windows = FocusedFlags{ .root_window = true, .child_windows = true };
 };
 //--------------------------------------------------------------------------------------------------
@@ -953,7 +985,7 @@ pub const HoveredFlags = packed struct(c_int) {
     no_popup_hierarchy: bool = false,
     dock_hierarchy: bool = false,
     allow_when_blocked_by_popup: bool = false,
-    _reserved1: bool = false,
+    _reserved0: bool = false,
     allow_when_blocked_by_active_item: bool = false,
     allow_when_overlapped_by_item: bool = false,
     allow_when_overlapped_by_window: bool = false,
@@ -962,10 +994,17 @@ pub const HoveredFlags = packed struct(c_int) {
     for_tooltip: bool = false,
     stationary: bool = false,
     delay_none: bool = false,
-    delay_normal: bool = false,
     delay_short: bool = false,
+    delay_normal: bool = false,
     no_shared_delay: bool = false,
     _padding: u14 = 0,
+
+    pub const none: HoveredFlags = @bitCast(0);
+
+    pub const allow_when_overlapped: HoveredFlags = .{
+        .allow_when_overlapped_by_item = true,
+        .allow_when_overlapped_by_window = true,
+    };
 
     pub const rect_only = HoveredFlags{
         .allow_when_blocked_by_popup = true,
@@ -973,7 +1012,11 @@ pub const HoveredFlags = packed struct(c_int) {
         .allow_when_overlapped_by_item = true,
         .allow_when_overlapped_by_window = true,
     };
-    pub const root_and_child_windows = HoveredFlags{ .root_window = true, .child_windows = true };
+
+    pub const root_and_child_windows = HoveredFlags{
+        .root_window = true,
+        .child_windows = true
+    };
 };
 //--------------------------------------------------------------------------------------------------
 /// `pub fn isWindowAppearing() bool`
@@ -1045,14 +1088,14 @@ extern fn zguiGetWindowContentRegionMax(size: *[2]f32) void;
 //--------------------------------------------------------------------------------------------------
 pub const DockNodeFlags = packed struct(c_int) {
     keep_alive_only: bool = false,
-    _reserved: u1 = 0,
+    _reserved0: u1 = 0,
     no_docking_over_central_node: bool = false,
     passthru_central_node: bool = false,
     no_docking_split: bool = false,
     no_resize: bool = false,
     auto_hide_tab_bar: bool = false,
     no_undocking: bool = false,
-    _padding_0: u2 = 0,
+    _padding0: u2 = 0,
 
     // Extended enum entries from imgui_internal (unstable, subject to change, use at own risk)
     dock_space: bool = false,
@@ -1069,6 +1112,16 @@ pub const DockNodeFlags = packed struct(c_int) {
     no_docking_over_other: bool = false,
     no_docking_over_empty: bool = false,
     _padding_1: u9 = 0,
+
+    pub const none: DockNodeFlags = @bitCast(0);
+
+    pub const no_docking: DockNodeFlags = .{
+        .no_docking_over_me = true,
+        .no_docking_over_other = true,
+        .no_docking_over_empty = true,
+        .no_docking_split = true,
+        .no_docking_split_other = true,
+    };
 };
 extern fn zguiDockSpace(str_id: [*:0]const u8, size: *const [2]f32, flags: DockNodeFlags) Ident;
 
@@ -1125,16 +1178,16 @@ extern fn zguiDockBuilderFinish(node_id: Ident) void;
 //--------------------------------------------------------------------------------------------------
 //
 // ListClipper
-//
 //--------------------------------------------------------------------------------------------------
 pub const ListClipper = extern struct {
-    Ctx: *Context,
-    DisplayStart: c_int,
-    DisplayEnd: c_int,
-    ItemsCount: c_int,
-    ItemsHeight: f32,
-    StartPosY: f32,
-    TempData: *anyopaque,
+    ctx: Context,
+    display_start: c_int,
+    display_end: c_int,
+    items_count: c_int,
+    items_height: f32,
+    start_pos_y: f32,
+    start_seek_offset_y: f64,
+    temp_data: *anyopaque,
 
     pub fn init() ListClipper {
         var result: ListClipper = undefined;
@@ -1164,63 +1217,83 @@ pub const ListClipper = extern struct {
 //
 //--------------------------------------------------------------------------------------------------
 pub const Style = extern struct {
-    alpha: f32,
-    disabled_alpha: f32,
-    window_padding: [2]f32,
-    window_rounding: f32,
-    window_border_size: f32,
-    window_min_size: [2]f32,
-    window_title_align: [2]f32,
-    window_menu_button_position: Direction,
-    child_rounding: f32,
-    child_border_size: f32,
-    popup_rounding: f32,
-    popup_border_size: f32,
-    frame_padding: [2]f32,
-    frame_rounding: f32,
-    frame_border_size: f32,
-    item_spacing: [2]f32,
-    item_inner_spacing: [2]f32,
-    cell_padding: [2]f32,
-    touch_extra_padding: [2]f32,
-    indent_spacing: f32,
-    columns_min_spacing: f32,
-    scrollbar_size: f32,
-    scrollbar_rounding: f32,
-    grab_min_size: f32,
-    grab_rounding: f32,
-    log_slider_deadzone: f32,
-    tab_rounding: f32,
-    tab_border_size: f32,
-    tab_min_width_for_close_button: f32,
-    tab_bar_border_size: f32,
-    tab_bar_overline_size: f32,
-    table_angled_header_angle: f32,
-    table_angled_headers_text_align: [2]f32,
-    color_button_position: Direction,
-    button_text_align: [2]f32,
-    selectable_text_align: [2]f32,
-    separator_text_border_size: f32,
-    separator_text_align: [2]f32,
-    separator_text_padding: [2]f32,
-    display_window_padding: [2]f32,
-    display_safe_area_padding: [2]f32,
-    docking_separator_size: f32,
-    mouse_cursor_scale: f32,
-    anti_aliased_lines: bool,
-    anti_aliased_lines_use_tex: bool,
-    anti_aliased_fill: bool,
-    curve_tessellation_tol: f32,
-    circle_tessellation_max_error: f32,
+    // Font scaling
+    // - recap: ImGui::GetFontSize() == FontSizeBase * (FontScaleMain * FontScaleDpi * other_scaling_factors)
+    font_size_base: f32,               // Current base font size before external global factors are applied. Use PushFont(NULL, size) to modify. Use ImGui::GetFontSize() to obtain scaled value.
+    font_scale_main: f32,              // Main global scale factor. May be set by application once, or exposed to end-user.
+    font_scale_dpi: f32,               // Additional global scale factor from viewport/monitor contents scale. When io.ConfigDpiScaleFonts is enabled, this is automatically overwritten when changing monitor DPI.
 
+    alpha: f32,                      // Global alpha applies to everything in Dear ImGui.
+    disabled_alpha: f32,              // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
+    window_padding: [2]f32,              // Padding within a window.
+    window_rounding: f32,             // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
+    window_border_size: f32,           // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    window_border_hover_padding: f32,   // Hit-testing extent outside/inside resizing border. Also extend determination of hovered window. Generally meaningfully larger than WindowBorderSize to make it easy to reach borders.
+    window_min_size: [2]f32,              // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
+    window_title_align: [2]f32,           // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
+    window_menu_button_position: Direction,   // Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left.
+    child_rounding: f32,              // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
+    child_border_size: f32,            // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    popup_rounding: f32,              // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
+    popup_border_size: f32,            // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    frame_padding: [2]f32,               // Padding within a framed rectangle (used by most widgets).
+    frame_rounding: f32,              // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
+    frame_border_size: f32,            // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    item_spacing: [2]f32,                // Horizontal and vertical spacing between widgets/lines.
+    item_inner_spacing: [2]f32,           // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
+    cell_padding: [2]f32,                // Padding within a table cell. Cellpadding.x is locked for entire table. CellPadding.y may be altered between different rows.
+    touch_extra_padding: [2]f32,          // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    indent_spacing: f32,              // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+    columns_min_spacing: f32,          // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
+    scrollbar_size: f32,              // Width of the vertical scrollbar, Height of the horizontal scrollbar.
+    scrollbar_rounding: f32,          // Radius of grab corners for scrollbar.
+    grab_min_size: f32,                // Minimum width/height of a grab box for slider/scrollbar.
+    grab_rounding: f32,               // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+    log_slider_deadzone: f32,          // The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
+    image_border_size: f32,            // Thickness of border around Image() calls.
+    tab_rounding: f32,                // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
+    tab_border_size: f32,              // Thickness of border around tabs.
+    tab_min_width_base: f32,            // Minimum tab width, to make tabs larger than their contents. TabBar buttons are not affected.
+    tab_min_width_shrink: f32,          // Minimum tab width after shrinking, when using ImGuiTabBarFlags_FittingPolicyMixed policy.
+    tab_close_button_min_width_selected: f32,     // -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width.
+    tab_close_button_min_width_unselected: f32,   // -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width. FLT_MAX: never show close button when unselected.
+    tab_bar_border_size: f32,           // Thickness of tab-bar separator, which takes on the tab active color to denote focus.
+    tab_bar_overline_size: f32,         // Thickness of tab-bar overline, which highlights the selected tab-bar.
+    table_angled_headers_angle: f32,    // Angle of angled headers (supported values range from -50.0f degrees to +50.0f degrees).
+    table_angled_headers_text_align: [2]f32,// Alignment of angled headers within the cell
+    tree_lines_flags: TreeNodeFlags,      // Default way to draw lines connecting TreeNode hierarchy. ImGuiTreeNodeFlags_DrawLinesNone or ImGuiTreeNodeFlags_DrawLinesFull or ImGuiTreeNodeFlags_DrawLinesToNodes.
+    tree_lines_size: f32,              // Thickness of outlines when using ImGuiTreeNodeFlags_DrawLines.
+    tree_lines_rounding: f32,          // Radius of lines connecting child nodes to the vertical line.
+    color_button_position: Direction,        // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
+    button_text_align: [2]f32,            // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
+    selectable_text_align: [2]f32,        // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    separator_text_border_size: f32,    // Thickness of border in SeparatorText()
+    separator_text_align: [2]f32,         // Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center).
+    separator_text_padding: [2]f32,       // Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y.
+    display_window_padding: [2]f32,       // Apply to regular windows: amount which we enforce to keep visible when moving near edges of your screen.
+    display_safe_area_padding: [2]f32,     // Apply to every windows, menus, popups, tooltips: amount where we avoid displaying contents. Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).
+    docking_separator_size: f32,       // Thickness of resizing border between docked windows
+    mouse_cursor_scale: f32,           // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). We apply per-monitor DPI scaling over this scale. May be removed later.
+    anti_aliased_lines: bool,           // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    anti_aliased_lines_use_tex: bool,     // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to ImDrawList).
+    anti_aliased_fill: bool,            // Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    curve_tessellation_tol: f32,       // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
+    circle_tessellation_max_error: f32, // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
+
+    // Colors
     colors: [@typeInfo(StyleCol).@"enum".fields.len][4]f32,
 
-    hover_stationary_delay: f32,
-    hover_delay_short: f32,
-    hover_delay_normal: f32,
+    // Behaviors
+    // (It is possible to modify those fields mid-frame if specific behavior need it, unlike e.g. configuration fields in ImGuiIO)
+    hover_stationary_delay: f32,                  // Delay for IsItemHovered(ImGuiHoveredFlags_Stationary). Time required to consider mouse stationary.
+    hover_delay_short: f32,                       // Delay for IsItemHovered(ImGuiHoveredFlags_DelayShort). Usually used along with HoverStationaryDelay.
+    hover_delay_normal: f32,                      // Delay for IsItemHovered(ImGuiHoveredFlags_DelayNormal). "
+    hover_flags_for_tooltip_mouse: HoveredFlags, // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using mouse.
+    hover_flags_for_tooltip_nav: HoveredFlags,   // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
 
-    hover_flags_for_tooltip_mouse: HoveredFlags,
-    hover_flags_for_tooltip_nav: HoveredFlags,
+    // [Internal]
+    _main_scale: f32,                            // FIXME-WIP: Reference scale, as applied by ScaleAllSizes().
+    _next_frame_font_size_base: f32,             // FIXME: Temporary hack until we finish remaining work.
 
     /// `pub fn init() Style`
     pub fn init() Style {
@@ -2064,6 +2137,8 @@ pub const ComboFlags = packed struct(c_int) {
     no_preview: bool = false,
     width_fit_preview: bool = false,
     _padding: u24 = 0,
+
+    pub const none: ComboFlags = @bitCast(0);
 };
 //--------------------------------------------------------------------------------------------------
 pub const BeginCombo = struct {
@@ -2769,22 +2844,24 @@ pub const InputTextFlags = packed struct(c_int) {
     callback_resize: bool = false,
     callback_edit: bool = false,
     _padding: u8 = 0,
+
+    pub const none: InputTextFlags = @bitCast(0);
 };
 //--------------------------------------------------------------------------------------------------
 pub const InputTextCallbackData = extern struct {
-    ctx: *Context,
+    ctx: Context,
     event_flag: InputTextFlags,
     flags: InputTextFlags,
     user_data: ?*anyopaque,
     event_char: Wchar,
     event_key: Key,
     buf: [*]u8,
-    buf_text_len: i32,
-    buf_size: i32,
+    buf_text_len: c_int,
+    buf_size: c_int,
     buf_dirty: bool,
-    cursor_pos: i32,
-    selection_start: i32,
-    selection_end: i32,
+    cursor_pos: c_int,
+    selection_start: c_int,
+    selection_end: c_int,
 
     pub fn init() InputTextCallbackData {
         var result: InputTextCallbackData = undefined;
@@ -3126,7 +3203,7 @@ extern fn zguiInputScalarN(
 //
 //--------------------------------------------------------------------------------------------------
 pub const ColorEditFlags = packed struct(c_int) {
-    _reserved0: bool = false,
+    _reserved0: u1 = 0,
     no_alpha: bool = false,
     no_picker: bool = false,
     no_options: bool = false,
@@ -3138,15 +3215,13 @@ pub const ColorEditFlags = packed struct(c_int) {
     no_drag_drop: bool = false,
     no_border: bool = false,
 
-    _reserved1: bool = false,
-    _reserved2: bool = false,
-    _reserved3: bool = false,
-    _reserved4: bool = false,
-    _reserved5: bool = false,
+    alpha_opaque: bool = false,
+    alpha_no_bg: bool = false,
+    alpha_preview_half: bool = false,
+    _reserved1: u2 = 0,
 
     alpha_bar: bool = false,
-    alpha_preview: bool = false,
-    alpha_preview_half: bool = false,
+    _reserved2: u2 = 0,
     hdr: bool = false,
     display_rgb: bool = false,
     display_hsv: bool = false,
@@ -3159,6 +3234,8 @@ pub const ColorEditFlags = packed struct(c_int) {
     input_hsv: bool = false,
 
     _padding: u3 = 0,
+
+    pub const none: ColorEditFlags = @bitCast(0);
 
     pub const default_options = ColorEditFlags{
         .uint8 = true,
@@ -3250,10 +3327,20 @@ pub const TreeNodeFlags = packed struct(c_int) {
     frame_padding: bool = false,
     span_avail_width: bool = false,
     span_full_width: bool = false,
-    span_text_width: bool = false,
+    span_label_width: bool = false,
     span_all_columns: bool = false,
-    nav_left_jumps_back_here: bool = false,
-    _padding: u16 = 0,
+    label_span_all_columns: bool = false,
+    _reserved0: u1 = 0,
+    nav_left_jumps_to_parent: bool = false,
+
+    // [EXPERIMENTAL] Draw lines connecting TreeNode hierarchy. Discuss in GitHub issue #2920.
+    draw_lines_none: bool = false,
+    draw_lines_full: bool = false,
+    draw_lines_to_nodes: bool = false,
+
+    _padding: u12 = 0,
+
+    pub const none: TreeNodeFlags = @bitCast(0);
 
     pub const collapsing_header = TreeNodeFlags{
         .framed = true,
@@ -3359,6 +3446,8 @@ pub const SelectableFlags = packed struct(c_int) {
     allow_overlap: bool = false,
     highlight: bool = false,
     _padding: u26 = 0,
+
+    pub const none: SelectableFlags = @bitCast(0);
 };
 //--------------------------------------------------------------------------------------------------
 pub const Selectable = struct {
@@ -3500,6 +3589,8 @@ pub const TableFlags = packed struct(c_int) {
     highlight_hovered_column: bool = false,
 
     _padding: u3 = 0,
+
+    pub const none: TableFlags = @bitCast(0);
 };
 
 pub const TableRowFlags = packed struct(c_int) {
@@ -3538,17 +3629,21 @@ pub const TableColumnFlags = packed struct(c_int) {
     is_hovered: bool = false,
 
     _padding1: u4 = 0,
+
+    pub const none: TableColumnFlags = @bitCast(0);
+};
+
+pub const SortDirection = enum(u8) {
+    none = 0,
+    ascending = 1, // Ascending = 0->9, A->Z etc.
+    descending = 2, // Descending = 9->0, Z->A etc.
 };
 
 pub const TableColumnSortSpecs = extern struct {
     user_id: Ident,
     index: i16,
     sort_order: i16,
-    sort_direction: enum(u8) {
-        none = 0,
-        ascending = 1, // Ascending = 0->9, A->Z etc.
-        descending = 2, // Descending = 9->0, Z->A etc.
-    },
+    sort_direction: SortDirection,
 };
 
 pub const TableSortSpecs = *extern struct {
@@ -3951,18 +4046,19 @@ pub const PopupFlags = packed struct(c_int) {
     mouse_button_right: bool = false,
     mouse_button_middle: bool = false,
 
-    _reserved0: bool = false,
-    _reserved1: bool = false,
+    _reserved0: u2 = 0,
 
     no_reopen: bool = false,
-    _reserved2: bool = false,
+    _reserved1: u1 = 0,
     no_open_over_existing_popup: bool = false,
     no_open_over_items: bool = false,
+    _reserved2: u1 = 0,
     any_popup_id: bool = false,
     any_popup_level: bool = false,
     _padding: u21 = 0,
 
     pub const any_popup = PopupFlags{ .any_popup_id = true, .any_popup_level = true };
+    pub const none: PopupFlags = @bitCast(0);
 };
 pub fn beginPopupModal(name: [:0]const u8, args: Begin) bool {
     return zguiBeginPopupModal(name, args.popen, args.flags);
@@ -4000,9 +4096,12 @@ pub const TabBarFlags = packed struct(c_int) {
     no_tab_list_scrolling_buttons: bool = false,
     no_tooltip: bool = false,
     draw_selected_overline: bool = false,
-    fitting_policy_resize_down: bool = false,
+    fitting_policy_mixed: bool = false,
+    fitting_policy_shrink: bool = false,
     fitting_policy_scroll: bool = false,
     _padding: u23 = 0,
+
+    pub const none: TabBarFlags = @bitCast(0);
 };
 pub const TabItemFlags = packed struct(c_int) {
     unsaved_document: bool = false,
@@ -4015,6 +4114,8 @@ pub const TabItemFlags = packed struct(c_int) {
     trailing: bool = false,
     no_assumed_closure: bool = false,
     _padding: u23 = 0,
+
+    pub const none: TabItemFlags = @bitCast(0);
 };
 pub fn beginTabBar(label: [:0]const u8, flags: TabBarFlags) bool {
     return zguiBeginTabBar(label, flags);
@@ -4148,13 +4249,14 @@ pub const DragDropFlags = packed struct(c_int) {
     _padding1: u19 = 0,
 
     pub const accept_peek_only = @This(){ .accept_before_delivery = true, .accept_no_draw_default_rect = true };
+    pub const none: DragDropFlags = @bitCast(0);
 };
 
 pub const Payload = extern struct {
     data: ?*anyopaque = null,
     data_size: c_int = 0,
-    source_id: c_uint = 0,
-    source_parent_id: c_uint = 0,
+    source_id: Ident = 0,
+    source_parent_id: Ident = 0,
     data_frame_count: c_int = -1,
     data_type: [32:0]c_char,
     preview: bool = false,
@@ -4293,7 +4395,7 @@ const SelectionRequestType = enum(c_int) {
     set_range, // Request app to select/unselect [RangeFirstItem..RangeLastItem] items (inclusive) based on value of Selected. Only EndMultiSelect() request this, app code can read after BeginMultiSelect() and it will always be false.
 };
 
-const MultiSelectFlags = packed struct(c_int) {
+pub const MultiSelectFlags = packed struct(c_int) {
     single_select: bool = false, // Disable selecting more than one item. This is available to allow single-selection code to share same code/logic if desired. It essentially disables the main purpose of BeginMultiSelect() tho!
     no_select_all: bool = false, // Disable CTRL+A shortcut to select all.
     no_range_select: bool = false, // Disable Shift+selection mouse/keyboard support (useful for unordered 2D selection). With BoxSelect is also ensure contiguous SetRange requests are not combined into one. This allows not handling interpolation in SetRange requests.
@@ -4309,15 +4411,17 @@ const MultiSelectFlags = packed struct(c_int) {
     scope_rect: bool = false, // Scope for _BoxSelect and _ClearOnClickVoid is rectangle encompassing BeginMultiSelect()/EndMultiSelect(). Use if BeginMultiSelect() is called multiple times in same window.
     select_on_click: bool = false, // Apply selection on mouse down when clicking on unselected item. (Default)
     select_on_click_release: bool = false, // Apply selection on mouse release when clicking an unselected item. Allow dragging an unselected item without altering selection.
-    range_select2d: bool = false, // Shift+Selection uses 2d geometry instead of linear sequence, so possible to use Shift+up/down to select vertically in grid. Analogous to what BoxSelect does.
+    _deprecated0: bool = false, // range_select2d: Shift+Selection uses 2d geometry instead of linear sequence, so possible to use Shift+up/down to select vertically in grid. Analogous to what BoxSelect does.
     nav_wrap_x: bool = false, // [Temporary] Enable navigation wrapping on X axis. Provided as a convenience because we don't have a design for the general Nav API for this yet. When the more general feature be public we may obsolete this flag in favor of new one.
-    _: u15 = 0,
+    _padding: u15 = 0,
+
+    pub const none: MultiSelectFlags = @bitCast(0);
 };
 
 // Main API
 extern fn zguiBeginMultiSelect(flags: MultiSelectFlags, selection_size: c_int, items_count: c_int) *MultiSelectIO;
 pub const BeginMultiSelect = struct {
-    flags: MultiSelectFlags = .{},
+    flags: MultiSelectFlags = .none,
     selection_size: i32 = -1,
     items_count: i32 = -1,
 };
@@ -4389,7 +4493,7 @@ pub const DrawCmd = extern struct {
     user_callback_data_offset: c_int,
 };
 
-pub const DrawCallback = *const fn (*const anyopaque, *const DrawCmd) callconv(.C) void;
+pub const DrawCallback = *const fn (parent_list: DrawList, *const anyopaque, *const DrawCmd) callconv(.C) void;
 
 pub const getWindowDrawList = zguiGetWindowDrawList;
 pub const getBackgroundDrawList = zguiGetBackgroundDrawList;
@@ -4412,6 +4516,7 @@ extern fn zguiGetForegroundDrawList() DrawList;
 extern fn zguiCreateDrawList() DrawList;
 extern fn zguiDestroyDrawList(draw_list: DrawList) void;
 
+// TODO(michaelbartnett): opaques should not be pointers, this and Context and some others
 pub const DrawList = *opaque {
     pub const getOwnerName = zguiDrawList_GetOwnerName;
     extern fn zguiDrawList_GetOwnerName(draw_list: DrawList) ?[*:0]const u8;
@@ -4481,6 +4586,8 @@ pub const DrawList = *opaque {
         allow_vtx_offset: bool = false,
 
         _padding: u28 = 0,
+
+        pub const none: DrawListFlags = @bitCast(0);
     };
 
     pub const setDrawListFlags = zguiDrawList_SetFlags;
