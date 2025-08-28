@@ -2285,7 +2285,7 @@ extern "C"
         IM_DELETE(draw_list);
     }
 
-    ZGUI_API const char *zguiDrawList_GetOwnerName(ImDrawList *draw_list)
+    ZGUI_API const char *zguiDrawList_GetOwnerName(const ImDrawList *draw_list)
     {
         return draw_list->_OwnerName;
     }
@@ -2300,7 +2300,7 @@ extern "C"
         draw_list->_ClearFreeMemory();
     }
 
-    ZGUI_API int zguiDrawList_GetVertexBufferLength(ImDrawList *draw_list)
+    ZGUI_API int zguiDrawList_GetVertexBufferLength(const ImDrawList *draw_list)
     {
         return draw_list->VtxBuffer.size();
     }
@@ -2309,7 +2309,7 @@ extern "C"
         return draw_list->VtxBuffer.begin();
     }
 
-    ZGUI_API int zguiDrawList_GetIndexBufferLength(ImDrawList *draw_list)
+    ZGUI_API int zguiDrawList_GetIndexBufferLength(const ImDrawList *draw_list)
     {
         return draw_list->IdxBuffer.size();
     }
@@ -2317,12 +2317,12 @@ extern "C"
     {
         return draw_list->IdxBuffer.begin();
     }
-    ZGUI_API unsigned int zguiDrawList_GetCurrentIndex(ImDrawList *draw_list)
+    ZGUI_API unsigned int zguiDrawList_GetCurrentIndex(const ImDrawList *draw_list)
     {
         return draw_list->_VtxCurrentIdx;
     }
 
-    ZGUI_API int zguiDrawList_GetCmdBufferLength(ImDrawList *draw_list)
+    ZGUI_API int zguiDrawList_GetCmdBufferLength(const ImDrawList *draw_list)
     {
         return draw_list->CmdBuffer.size();
     }
@@ -2335,7 +2335,7 @@ extern "C"
     {
         draw_list->Flags = flags;
     }
-    ZGUI_API ImDrawListFlags zguiDrawList_GetFlags(ImDrawList *draw_list)
+    ZGUI_API ImDrawListFlags zguiDrawList_GetFlags(const ImDrawList *draw_list)
     {
         return draw_list->Flags;
     }
@@ -2372,14 +2372,14 @@ extern "C"
         draw_list->PopTextureID();
     }
 
-    ZGUI_API void zguiDrawList_GetClipRectMin(ImDrawList *draw_list, float clip_min[2])
+    ZGUI_API void zguiDrawList_GetClipRectMin(const ImDrawList *draw_list, float clip_min[2])
     {
         const ImVec2 c = draw_list->GetClipRectMin();
         clip_min[0] = c.x;
         clip_min[1] = c.y;
     }
 
-    ZGUI_API void zguiDrawList_GetClipRectMax(ImDrawList *draw_list, float clip_max[2])
+    ZGUI_API void zguiDrawList_GetClipRectMax(const ImDrawList *draw_list, float clip_max[2])
     {
         const ImVec2 c = draw_list->GetClipRectMax();
         clip_max[0] = c.x;
@@ -2866,33 +2866,33 @@ extern "C"
         return ImGui::GetMainViewport();
     }
 
-    ZGUI_API ImGuiID zguiViewport_GetId(ImGuiViewport *viewport)
+    ZGUI_API ImGuiID zguiViewport_GetId(const ImGuiViewport *viewport)
     {
         return viewport->ID;
     }
 
-    ZGUI_API void zguiViewport_GetPos(ImGuiViewport *viewport, float p[2])
+    ZGUI_API void zguiViewport_GetPos(const ImGuiViewport *viewport, float p[2])
     {
         const ImVec2 pos = viewport->Pos;
         p[0] = pos.x;
         p[1] = pos.y;
     }
 
-    ZGUI_API void zguiViewport_GetSize(ImGuiViewport *viewport, float p[2])
+    ZGUI_API void zguiViewport_GetSize(const ImGuiViewport *viewport, float p[2])
     {
         const ImVec2 sz = viewport->Size;
         p[0] = sz.x;
         p[1] = sz.y;
     }
 
-    ZGUI_API void zguiViewport_GetWorkPos(ImGuiViewport *viewport, float p[2])
+    ZGUI_API void zguiViewport_GetWorkPos(const ImGuiViewport *viewport, float p[2])
     {
         const ImVec2 pos = viewport->WorkPos;
         p[0] = pos.x;
         p[1] = pos.y;
     }
 
-    ZGUI_API void zguiViewport_GetWorkSize(ImGuiViewport *viewport, float p[2])
+    ZGUI_API void zguiViewport_GetWorkSize(const ImGuiViewport *viewport, float p[2])
     {
         const ImVec2 sz = viewport->WorkSize;
         p[0] = sz.x;
