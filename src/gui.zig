@@ -473,8 +473,9 @@ pub const TextureIdent = u64;
 pub const TextureData = opaque{};
 pub const Wchar = if (@import("zgui_options").use_wchar32) u32 else u16;
 pub const Key = enum(c_int) {
+    // Keyboard
     none = 0,
-    tab = 512,
+    tab = 512,             // == ImGuiKey_NamedKey_BEGIN
     left_arrow,
     right_arrow,
     up_arrow,
@@ -492,7 +493,7 @@ pub const Key = enum(c_int) {
     left_ctrl,
     left_shift,
     left_alt,
-    left_super,
+    left_super,     // Also see ImGuiMod_Ctrl, ImGuiMod_Shift, ImGuiMod_Alt, ImGuiMod_Super below!
     right_ctrl,
     right_shift,
     right_alt,
@@ -558,17 +559,17 @@ pub const Key = enum(c_int) {
     f22,
     f23,
     f24,
-    apostrophe,
-    comma,
-    minus,
-    period,
-    slash,
-    semicolon,
-    equal,
-    left_bracket,
-    back_slash,
-    right_bracket,
-    grave_accent,
+    apostrophe,        // '
+    comma,             // ,
+    minus,             // -
+    period,            // .
+    slash,             // /
+    semicolon,         // ;
+    equal,             // =
+    left_bracket,       // [
+    back_slash,         // \ (this text inhibit multiline comment caused by backslash)
+    right_bracket,      // ]
+    grave_accent,       // `
     caps_lock,
     scroll_lock,
     num_lock,
@@ -592,34 +593,41 @@ pub const Key = enum(c_int) {
     keypad_enter,
     keypad_equal,
 
-    app_back,
+    app_back,               // Available on some keyboard/mouses. Often referred as "Browser Back"
     app_forward,
+    oem102,                // Non-US backslash.
 
-    gamepad_start,
-    gamepad_back,
-    gamepad_faceleft,
-    gamepad_faceright,
-    gamepad_faceup,
-    gamepad_facedown,
-    gamepad_dpadleft,
-    gamepad_dpadright,
-    gamepad_dpadup,
-    gamepad_dpaddown,
-    gamepad_l1,
-    gamepad_r1,
-    gamepad_l2,
-    gamepad_r2,
-    gamepad_l3,
-    gamepad_r3,
-    gamepad_lstickleft,
-    gamepad_lstickright,
-    gamepad_lstickup,
-    gamepad_lstickdown,
-    gamepad_rstickleft,
-    gamepad_rstickright,
-    gamepad_rstickup,
-    gamepad_rstickdown,
+    // Gamepad
+    // (analog values are 0.0f to 1.0f)
+    // (download controller mapping PNG/PSD at http://dearimgui.com/controls_sheets)
+    //                              // XBOX        | SWITCH  | PLAYSTA. | -> ACTION
+    gamepad_start,          // Menu        | +       | Options  |
+    gamepad_back,           // View        | -       | Share    |
+    gamepad_face_left,       // X           | Y       | Square   | Tap: Toggle Menu. Hold: Windowing mode (Focus/Move/Resize windows)
+    gamepad_face_right,      // B           | A       | Circle   | Cancel / Close / Exit
+    gamepad_face_up,         // Y           | X       | Triangle | Text Input / On-screen Keyboard
+    gamepad_face_down,       // A           | B       | Cross    | Activate / Open / Toggle / Tweak
+    gamepad_dpad_left,       // D-pad Left  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_dpad_right,      // D-pad Right | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_dpad_up,         // D-pad Up    | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_dpad_down,       // D-pad Down  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_l1,             // L Bumper    | L       | L1       | Tweak Slower / Focus Previous (in Windowing mode)
+    gamepad_r1,             // R Bumper    | R       | R1       | Tweak Faster / Focus Next (in Windowing mode)
+    gamepad_l2,             // L Trigger   | ZL      | L2       | [Analog]
+    gamepad_r2,             // R Trigger   | ZR      | R2       | [Analog]
+    gamepad_l3,             // L Stick     | L3      | L3       |
+    gamepad_r3,             // R Stick     | R3      | R3       |
+    gamepad_l_stick_left,     //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_l_stick_right,    //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_l_stick_up,       //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_l_stick_down,     //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_r_stick_left,     //             |         |          | [Analog]
+    gamepad_r_stick_right,    //             |         |          | [Analog]
+    gamepad_r_stick_up,       //             |         |          | [Analog]
+    gamepad_r_stick_down,     //             |         |          | [Analog]
 
+    // Aliases: Mouse Buttons (auto-submitted from AddMouseButtonEvent() calls)
+    // - This is mirroring the data also written to io.MouseDown[], io.MouseWheel, in a format allowing them to be accessed via standard key API.
     mouse_left,
     mouse_right,
     mouse_middle,
@@ -1355,62 +1363,64 @@ extern fn zguiStyleColorsClassic(style: *Style) void;
 pub const StyleCol = enum(c_int) {
     text,
     text_disabled,
-    window_bg,
-    child_bg,
-    popup_bg,
+    window_bg,              // Background of normal windows
+    child_bg,               // Background of child windows
+    popup_bg,               // Background of popups, menus, tooltips windows
     border,
     border_shadow,
-    frame_bg,
+    frame_bg,               // Background of checkbox, radio button, plot, slider, text input
     frame_bg_hovered,
     frame_bg_active,
-    title_bg,
-    title_bg_active,
-    title_bg_collapsed,
+    title_bg,               // Title bar
+    title_bg_active,         // Title bar when focused
+    title_bg_collapsed,      // Title bar when collapsed
     menu_bar_bg,
     scrollbar_bg,
     scrollbar_grab,
     scrollbar_grab_hovered,
     scrollbar_grab_active,
-    check_mark,
+    check_mark,             // Checkbox tick and RadioButton circle
     slider_grab,
     slider_grab_active,
     button,
     button_hovered,
     button_active,
-    header,
+    header,                // Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
     header_hovered,
     header_active,
     separator,
     separator_hovered,
     separator_active,
-    resize_grip,
+    resize_grip,            // Resize grip in lower-right and lower-left corners of windows.
     resize_grip_hovered,
     resize_grip_active,
-    tab_hovered,
-    tab,
-    tab_selected,
-    tab_selected_overline,
-    tab_dimmed,
-    tab_dimmed_selected,
-    tab_dimmed_selected_overline,
-    docking_preview,
-    docking_empty_bg,
+    input_text_cursor,       // InputText cursor/caret
+    tab_hovered,            // Tab background, when hovered
+    tab,                   // Tab background, when tab-bar is focused & tab is unselected
+    tab_selected,           // Tab background, when tab-bar is focused & tab is selected
+    tab_selected_overline,   // Tab horizontal overline, when tab-bar is focused & tab is selected
+    tab_dimmed,             // Tab background, when tab-bar is unfocused & tab is unselected
+    tab_dimmed_selected,     // Tab background, when tab-bar is unfocused & tab is selected
+    tab_dimmed_selected_overline,//..horizontal overline, when tab-bar is unfocused & tab is selected
+    docking_preview,        // Preview overlay color when about to docking something
+    docking_empty_bg,        // Background color for empty node (e.g. CentralNode with no window docked into it)
     plot_lines,
     plot_lines_hovered,
     plot_histogram,
     plot_histogram_hovered,
-    table_header_bg,
-    table_border_strong,
-    table_border_light,
-    table_row_bg,
-    table_row_bg_alt,
-    text_link,
-    text_selected_bg,
-    drag_drop_target,
-    nav_highlight,
-    nav_windowing_highlight,
-    nav_windowing_dim_bg,
-    modal_window_dim_bg,
+    table_header_bg,         // Table header background
+    table_border_strong,     // Table outer and header borders (prefer using Alpha=1.0 here)
+    table_border_light,      // Table inner borders (prefer using Alpha=1.0 here)
+    table_row_bg,            // Table row background (even rows)
+    table_row_bg_alt,         // Table row background (odd rows)
+    text_link,              // Hyperlink color
+    text_selected_bg,        // Selected text inside an InputText
+    tree_lines,             // Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
+    drag_drop_target,        // Rectangle highlighting a drop target
+    nav_cursor,             // Color of keyboard/gamepad navigation cursor/rectangle, when visible
+    nav_windowing_highlight, // Highlight window when using CTRL+TAB
+    nav_windowing_dim_bg,     // Darken/colorize entire screen behind the CTRL+TAB window list, when active
+    modal_window_dim_bg,      // Darken/colorize entire screen behind a modal window, when one is active
 };
 
 pub fn pushStyleColor4f(args: struct {
@@ -1447,40 +1457,46 @@ extern fn zguiPopTextWrapPos() void;
 //--------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 pub const StyleVar = enum(c_int) {
-    alpha, // 1f
-    disabled_alpha, // 1f
-    window_padding, // 2f
-    window_rounding, // 1f
-    window_border_size, // 1f
-    window_min_size, // 2f
-    window_title_align, // 2f
-    child_rounding, // 1f
-    child_border_size, // 1f
-    popup_rounding, // 1f
-    popup_border_size, // 1f
-    frame_padding, // 2f
-    frame_rounding, // 1f
-    frame_border_size, // 1f
-    item_spacing, // 2f
-    item_inner_spacing, // 2f
-    indent_spacing, // 1f
-    cell_padding, // 2f
-    scrollbar_size, // 1f
-    scrollbar_rounding, // 1f
-    grab_min_size, // 1f
-    grab_rounding, // 1f
-    tab_rounding, // 1f
-    tab_border_size, // 1f
-    tab_bar_border_size, // 1f
-    tab_bar_overline_size, // 1f
-    table_angled_headers_angle, // 1f
-    table_angled_headers_text_align, // 2f
-    button_text_align, // 2f
-    selectable_text_align, // 2f
-    separator_text_border_size, // 1f
-    separator_text_align, // 2f
-    separator_text_padding, // 2f
-    docking_separator_size, // 1f
+    // Enum name ------------------- // Member in ImGuiStyle structure (see ImGuiStyle for descriptions)
+    alpha,                           // float     Alpha
+    disabled_alpha,                  // float     DisabledAlpha
+    window_padding,                  // ImVec2    WindowPadding
+    window_rounding,                 // float     WindowRounding
+    window_border_size,              // float     WindowBorderSize
+    window_min_size,                 // ImVec2    WindowMinSize
+    window_title_align,              // ImVec2    WindowTitleAlign
+    child_rounding,                  // float     ChildRounding
+    child_border_size,               // float     ChildBorderSize
+    popup_rounding,                  // float     PopupRounding
+    popup_border_size,               // float     PopupBorderSize
+    frame_padding,                   // ImVec2    FramePadding
+    frame_rounding,                  // float     FrameRounding
+    frame_border_size,               // float     FrameBorderSize
+    item_spacing,                    // ImVec2    ItemSpacing
+    item_inner_spacing,              // ImVec2    ItemInnerSpacing
+    indent_spacing,                  // float     IndentSpacing
+    cell_padding,                    // ImVec2    CellPadding
+    scrollbar_size,                  // float     ScrollbarSize
+    scrollbar_rounding,              // float     ScrollbarRounding
+    grab_min_size,                   // float     GrabMinSize
+    grab_rounding,                   // float     GrabRounding
+    image_border_size,               // float     ImageBorderSize
+    tab_rounding,                    // float     TabRounding
+    tab_border_size,                 // float     TabBorderSize
+    tab_min_width_base,              // float     TabMinWidthBase
+    tab_min_width_shrink,            // float     TabMinWidthShrink
+    tab_bar_border_size,             // float     TabBarBorderSize
+    tab_bar_overline_size,           // float     TabBarOverlineSize
+    table_angled_headers_angle,      // float     TableAngledHeadersAngle
+    table_angled_headers_text_align, // ImVec2    TableAngledHeadersTextAlign
+    tree_lines_size,                 // float     TreeLinesSize
+    tree_lines_rounding,             // float     TreeLinesRounding
+    button_text_align,               // ImVec2    ButtonTextAlign
+    selectable_text_align,           // ImVec2    SelectableTextAlign
+    separator_text_border_size,      // float     SeparatorTextBorderSize
+    separator_text_align,            // ImVec2    SeparatorTextAlign
+    separator_text_padding,          // ImVec2    SeparatorTextPadding
+    docking_separator_size,          // float     DockingSeparatorSize
 };
 
 pub fn pushStyleVar1f(args: struct {
@@ -1679,6 +1695,8 @@ pub const Cursor = enum(c_int) {
     resize_nesw,
     resize_nwse,
     hand,
+    wait,
+    progress,
     not_allowed,
     count,
 };
@@ -4391,7 +4409,7 @@ const SelectionRequest = extern struct {
 /// Selection request type
 const SelectionRequestType = enum(c_int) {
     none = 0,
-    set_all = 1, // Request app to clear selection (if Selected==false) or select all items (if Selected==true)
+    set_all,   // Request app to clear selection (if Selected==false) or select all items (if Selected==true)
     set_range, // Request app to select/unselect [RangeFirstItem..RangeLastItem] items (inclusive) based on value of Selected. Only EndMultiSelect() request this, app code can read after BeginMultiSelect() and it will always be false.
 };
 
