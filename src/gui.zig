@@ -200,7 +200,7 @@ pub const ConfigFlags = packed struct(c_int) {
     is_touch_screen: bool = false,
     _padding: u10 = 0,
 
-    pub const none: ConfigFlags = @bitCast(0);
+    pub const none: ConfigFlags = @bitCast(@as(c_int, 0));
 };
 
 pub const FontFlags = packed struct(c_uint) {
@@ -209,7 +209,7 @@ pub const FontFlags = packed struct(c_uint) {
     lock_baked_sizes: bool = false,
     _padding: u29 = 0,
 
-    pub const none: FontFlags = @bitCast(0);
+    pub const none: FontFlags = @bitCast(@as(c_int, 0));
 };
 
 pub const FontConfig = extern struct {
@@ -702,7 +702,7 @@ pub const ChildFlags = packed struct(c_int) {
     nav_flattened: bool = false,
     _padding: u23 = 0,
 
-    pub const none: ChildFlags = @bitCast(0);
+    pub const none: ChildFlags = @bitCast(@as(c_int, 0));
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -731,7 +731,7 @@ pub const ButtonFlags = packed struct(c_int) {
     mouse_button_middle: bool = false,
     _padding: u29 = 0,
 
-    pub const none: ButtonFlags = @bitCast(0);
+    pub const none: ButtonFlags = @bitCast(@as(c_int, 0));
     pub const mouse_button_mask: ButtonFlags = .{
         .mouse_button_left = true,
         .mouse_button_right = true,
@@ -982,7 +982,7 @@ pub const FocusedFlags = packed struct(c_int) {
     dock_hierarchy: bool = false,
     _padding: u27 = 0,
 
-    pub const none: FocusedFlags = @bitCast(0);
+    pub const none: FocusedFlags = @bitCast(@as(c_int, 0));
     pub const root_and_child_windows = FocusedFlags{ .root_window = true, .child_windows = true };
 };
 //--------------------------------------------------------------------------------------------------
@@ -1007,7 +1007,7 @@ pub const HoveredFlags = packed struct(c_int) {
     no_shared_delay: bool = false,
     _padding: u14 = 0,
 
-    pub const none: HoveredFlags = @bitCast(0);
+    pub const none: HoveredFlags = @bitCast(@as(c_int, 0));
 
     pub const allow_when_overlapped: HoveredFlags = .{
         .allow_when_overlapped_by_item = true,
@@ -1121,7 +1121,7 @@ pub const DockNodeFlags = packed struct(c_int) {
     no_docking_over_empty: bool = false,
     _padding_1: u9 = 0,
 
-    pub const none: DockNodeFlags = @bitCast(0);
+    pub const none: DockNodeFlags = @bitCast(@as(c_int, 0));
 
     pub const no_docking: DockNodeFlags = .{
         .no_docking_over_me = true,
@@ -2156,7 +2156,7 @@ pub const ComboFlags = packed struct(c_int) {
     width_fit_preview: bool = false,
     _padding: u24 = 0,
 
-    pub const none: ComboFlags = @bitCast(0);
+    pub const none: ComboFlags = @bitCast(@as(c_int, 0));
 };
 //--------------------------------------------------------------------------------------------------
 pub const BeginCombo = struct {
@@ -2863,7 +2863,7 @@ pub const InputTextFlags = packed struct(c_int) {
     callback_edit: bool = false,
     _padding: u8 = 0,
 
-    pub const none: InputTextFlags = @bitCast(0);
+    pub const none: InputTextFlags = @bitCast(@as(c_int, 0));
 };
 //--------------------------------------------------------------------------------------------------
 pub const InputTextCallbackData = extern struct {
@@ -3253,7 +3253,7 @@ pub const ColorEditFlags = packed struct(c_int) {
 
     _padding: u3 = 0,
 
-    pub const none: ColorEditFlags = @bitCast(0);
+    pub const none: ColorEditFlags = @bitCast(@as(c_int, 0));
 
     pub const default_options = ColorEditFlags{
         .uint8 = true,
@@ -3358,7 +3358,7 @@ pub const TreeNodeFlags = packed struct(c_int) {
 
     _padding: u12 = 0,
 
-    pub const none: TreeNodeFlags = @bitCast(0);
+    pub const none: TreeNodeFlags = @bitCast(@as(c_int, 0));
 
     pub const collapsing_header = TreeNodeFlags{
         .framed = true,
@@ -3465,7 +3465,7 @@ pub const SelectableFlags = packed struct(c_int) {
     highlight: bool = false,
     _padding: u26 = 0,
 
-    pub const none: SelectableFlags = @bitCast(0);
+    pub const none: SelectableFlags = @bitCast(@as(c_int, 0));
 };
 //--------------------------------------------------------------------------------------------------
 pub const Selectable = struct {
@@ -3608,7 +3608,7 @@ pub const TableFlags = packed struct(c_int) {
 
     _padding: u3 = 0,
 
-    pub const none: TableFlags = @bitCast(0);
+    pub const none: TableFlags = @bitCast(@as(c_int, 0));
 };
 
 pub const TableRowFlags = packed struct(c_int) {
@@ -3648,7 +3648,7 @@ pub const TableColumnFlags = packed struct(c_int) {
 
     _padding1: u4 = 0,
 
-    pub const none: TableColumnFlags = @bitCast(0);
+    pub const none: TableColumnFlags = @bitCast(@as(c_int, 0));
 };
 
 pub const SortDirection = enum(u8) {
@@ -4076,7 +4076,7 @@ pub const PopupFlags = packed struct(c_int) {
     _padding: u21 = 0,
 
     pub const any_popup = PopupFlags{ .any_popup_id = true, .any_popup_level = true };
-    pub const none: PopupFlags = @bitCast(0);
+    pub const none: PopupFlags = @bitCast(@as(c_int, 0));
 };
 pub fn beginPopupModal(name: [:0]const u8, args: Begin) bool {
     return zguiBeginPopupModal(name, args.popen, args.flags);
@@ -4119,7 +4119,7 @@ pub const TabBarFlags = packed struct(c_int) {
     fitting_policy_scroll: bool = false,
     _padding: u23 = 0,
 
-    pub const none: TabBarFlags = @bitCast(0);
+    pub const none: TabBarFlags = @bitCast(@as(c_int, 0));
 };
 pub const TabItemFlags = packed struct(c_int) {
     unsaved_document: bool = false,
@@ -4133,7 +4133,7 @@ pub const TabItemFlags = packed struct(c_int) {
     no_assumed_closure: bool = false,
     _padding: u23 = 0,
 
-    pub const none: TabItemFlags = @bitCast(0);
+    pub const none: TabItemFlags = @bitCast(@as(c_int, 0));
 };
 pub fn beginTabBar(label: [:0]const u8, flags: TabBarFlags) bool {
     return zguiBeginTabBar(label, flags);
@@ -4267,7 +4267,7 @@ pub const DragDropFlags = packed struct(c_int) {
     _padding1: u19 = 0,
 
     pub const accept_peek_only = @This(){ .accept_before_delivery = true, .accept_no_draw_default_rect = true };
-    pub const none: DragDropFlags = @bitCast(0);
+    pub const none: DragDropFlags = @bitCast(@as(c_int, 0));
 };
 
 pub const Payload = extern struct {
@@ -4433,7 +4433,7 @@ pub const MultiSelectFlags = packed struct(c_int) {
     nav_wrap_x: bool = false, // [Temporary] Enable navigation wrapping on X axis. Provided as a convenience because we don't have a design for the general Nav API for this yet. When the more general feature be public we may obsolete this flag in favor of new one.
     _padding: u15 = 0,
 
-    pub const none: MultiSelectFlags = @bitCast(0);
+    pub const none: MultiSelectFlags = @bitCast(@as(c_int, 0));
 };
 
 // Main API
@@ -4604,7 +4604,7 @@ pub const DrawList = opaque {
 
         _padding: u28 = 0,
 
-        pub const none: DrawListFlags = @bitCast(0);
+        pub const none: DrawListFlags = @bitCast(@as(c_int, 0));
     };
 
     pub const setDrawListFlags = zguiDrawList_SetFlags;
