@@ -715,7 +715,7 @@ pub const SliderFlags = packed struct(c_int) {
     clamp_on_input: bool = false,
     clamp_zero_range: bool = false,
     no_speed_tweaks: bool = false,
-    _padding: u23 = 0,
+    _padding: u20 = 0,
 
     pub const always_clamp: SliderFlags = .{
         .clamp_on_input = true,
@@ -3356,7 +3356,7 @@ pub const TreeNodeFlags = packed struct(c_int) {
     draw_lines_full: bool = false,
     draw_lines_to_nodes: bool = false,
 
-    _padding: u12 = 0,
+    _padding: u11 = 0,
 
     pub const none: TreeNodeFlags = @bitCast(@as(c_int, 0));
 
@@ -4073,7 +4073,7 @@ pub const PopupFlags = packed struct(c_int) {
     _reserved2: u1 = 0,
     any_popup_id: bool = false,
     any_popup_level: bool = false,
-    _padding: u21 = 0,
+    _padding: u20 = 0,
 
     pub const any_popup = PopupFlags{ .any_popup_id = true, .any_popup_level = true };
     pub const none: PopupFlags = @bitCast(@as(c_int, 0));
