@@ -33,8 +33,8 @@
             .lazy = true,
         },
         .freetype = .{
-            .url = "https://github.com/hexops/freetype/archive/972cd37bccecae2cc9f54cf0b562263a13209d02.tar.gz",
-            .hash = "freetype-0.0.0-AAAAAA5JcwBMujojfNLEq5g_WijZtU56mRLYx8bjjiMU",
+            .url = "git+https://github.com/allyourcodebase/freetype?ref=main#9d847affbd224cf6a7303ad6d98715e3675ef78c",
+            .hash = "freetype-2.13.3-C3-WdeyJAAD9z8BeYYQ8N3gNlPI9NvHRxg5039S5vhz7",
             .lazy = true,
         },
     },

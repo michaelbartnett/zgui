@@ -42,17 +42,50 @@ pub const DrawVert = extern struct {
 };
 //--------------------------------------------------------------------------------------------------
 
+fn initMemory(allocator: std.mem.Allocator) void {
+    mem_allocator = allocator;
+    std.debug.assert(mem_allocations.capacity() == 0);
+    mem_allocations.ensureTotalCapacity(allocator, 32) catch @panic("zgui: out of memory");
+    zguiSetAllocatorFunctions(zguiMemAlloc, zguiMemFree);
+}
+
+fn deinitMemory() void {
+    const allocator = mem_allocator orelse unreachable;
+
+    if (mem_allocations.count() > 0) {
+        var it = mem_allocations.iterator();
+        while (it.next()) |kv| {
+            const address = kv.key_ptr.*;
+            const size = kv.value_ptr.*;
+            allocator.free(@as([*]align(mem_alignment.toByteUnits()) u8, @ptrFromInt(address))[0..size]);
+            std.log.info(
+                "[zgui] Possible memory leak or static memory usage detected: (address: 0x{x}, size: {d})",
+                .{ address, size },
+            );
+        }
+        mem_allocations.clearAndFree(allocator);
+    }
+
+    mem_allocations.deinit(allocator);
+    mem_allocations = .empty;
+    mem_allocator = null;
+}
+
+fn initTempBuffer(allocator: std.mem.Allocator) void {
+    std.debug.assert(temp_buffer.capacity == 0);
+    temp_buffer.ensureTotalCapacity(allocator, 3 * 1024 + 1) catch unreachable;
+}
+
+fn deinitTempBuffer(allocator: std.mem.Allocator) void {
+    temp_buffer.deinit(allocator);
+    temp_buffer = .empty;
+}
+
 pub fn init(allocator: std.mem.Allocator) void {
     if (zguiGetCurrentContext() == null) {
-        mem_allocator = allocator;
-        mem_allocations = std.AutoHashMap(usize, usize).init(allocator);
-        mem_allocations.?.ensureTotalCapacity(32) catch @panic("zgui: out of memory");
-        zguiSetAllocatorFunctions(zguiMemAlloc, zguiMemFree);
-
+        initMemory(allocator);
+        initTempBuffer(allocator);
         _ = zguiCreateContext(null);
-
-        temp_buffer = std.ArrayList(u8).init(allocator);
-        temp_buffer.?.resize(3 * 1024 + 1) catch unreachable;
 
         if (te_enabled) {
             te.init();
@@ -63,15 +96,9 @@ pub fn init(allocator: std.mem.Allocator) void {
 /// hot-reloading mechanisms which rely on shared libraries.
 /// See "*CONTEXT AND MEMORY ALLOCATORS" section of ImGui docs.
 pub fn initWithExistingContext(allocator: std.mem.Allocator, ctx: *Context) void {
-    mem_allocator = allocator;
-    mem_allocations = std.AutoHashMap(usize, usize).init(allocator);
-    mem_allocations.?.ensureTotalCapacity(32) catch @panic("zgui: out of memory");
-    zguiSetAllocatorFunctions(zguiMemAlloc, zguiMemFree);
-
+    initMemory(allocator);
+    initTempBuffer(allocator);
     zguiSetCurrentContext(ctx);
-
-    temp_buffer = std.ArrayList(u8).init(allocator);
-    temp_buffer.?.resize(3 * 1024 + 1) catch unreachable;
 
     if (te_enabled) {
         te.init();
@@ -79,8 +106,7 @@ pub fn initWithExistingContext(allocator: std.mem.Allocator, ctx: *Context) void
 }
 pub fn deinit() void {
     if (zguiGetCurrentContext() != null) {
-        temp_buffer.?.deinit();
-        temp_buffer = null;
+        deinitTempBuffer(mem_allocator orelse unreachable);
         zguiDestroyContext(null);
 
         // Must be after destroy imgui *context.
@@ -89,37 +115,17 @@ pub fn deinit() void {
             te.deinit();
         }
 
-        if (mem_allocations.?.count() > 0) {
-            var it = mem_allocations.?.iterator();
-            while (it.next()) |kv| {
-                const address = kv.key_ptr.*;
-                const size = kv.value_ptr.*;
-                mem_allocator.?.free(@as([*]align(mem_alignment) u8, @ptrFromInt(address))[0..size]);
-                std.log.info(
-                    "[zgui] Possible memory leak or static memory usage detected: (address: 0x{x}, size: {d})",
-                    .{ address, size },
-                );
-            }
-            mem_allocations.?.clearAndFree();
-        }
-
-        assert(mem_allocations.?.count() == 0);
-        mem_allocations.?.deinit();
-        mem_allocations = null;
-        mem_allocator = null;
+        deinitMemory();
     }
 }
 pub fn initNoContext(allocator: std.mem.Allocator) void {
-    if (temp_buffer == null) {
-        temp_buffer = std.ArrayList(u8).init(allocator);
-        temp_buffer.?.resize(3 * 1024 + 1) catch unreachable;
-    }
+    initMemory(allocator);
+    initTempBuffer(allocator);
 }
 pub fn deinitNoContext() void {
-    if (temp_buffer) |buf| {
-        buf.deinit();
-        temp_buffer = null;
-    }
+    const allocator = mem_allocator orelse unreachable;
+    deinitTempBuffer(allocator);
+    deinitMemory();
 }
 
 pub fn createContext() *Context {
@@ -144,11 +150,11 @@ extern fn zguiGetCurrentContext() ?*Context;
 extern fn zguiSetCurrentContext(ctx: ?*Context) void;
 //--------------------------------------------------------------------------------------------------
 var mem_allocator: ?std.mem.Allocator = null;
-var mem_allocations: ?std.AutoHashMap(usize, usize) = null;
+var mem_allocations: std.AutoHashMapUnmanaged(usize, usize) = .empty;
 var mem_mutex: std.Thread.Mutex = .{};
-const mem_alignment = 16;
+const mem_alignment: std.mem.Alignment = .@"16";
 
-fn zguiMemAlloc(size: usize, _: ?*anyopaque) callconv(.C) ?*anyopaque {
+fn zguiMemAlloc(size: usize, _: ?*anyopaque) callconv(.c) ?*anyopaque {
     mem_mutex.lock();
     defer mem_mutex.unlock();
 
@@ -158,29 +164,27 @@ fn zguiMemAlloc(size: usize, _: ?*anyopaque) callconv(.C) ?*anyopaque {
         size,
     ) catch @panic("zgui: out of memory");
 
-    mem_allocations.?.put(@intFromPtr(mem.ptr), size) catch @panic("zgui: out of memory");
+    mem_allocations.put(mem_allocator.?, @intFromPtr(mem.ptr), size) catch @panic("zgui: out of memory");
 
     return mem.ptr;
 }
 
-fn zguiMemFree(maybe_ptr: ?*anyopaque, _: ?*anyopaque) callconv(.C) void {
+fn zguiMemFree(maybe_ptr: ?*anyopaque, _: ?*anyopaque) callconv(.c) void {
     if (maybe_ptr) |ptr| {
         mem_mutex.lock();
         defer mem_mutex.unlock();
 
-        if (mem_allocations != null) {
-            if (mem_allocations.?.fetchRemove(@intFromPtr(ptr))) |kv| {
-                const size = kv.value;
-                const mem = @as([*]align(mem_alignment) u8, @ptrCast(@alignCast(ptr)))[0..size];
-                mem_allocator.?.free(mem);
-            }
+        if (mem_allocations.fetchRemove(@intFromPtr(ptr))) |kv| {
+            const size = kv.value;
+            const mem = @as([*]align(mem_alignment.toByteUnits()) u8, @ptrCast(@alignCast(ptr)))[0..size];
+            mem_allocator.?.free(mem);
         }
     }
 }
 
 extern fn zguiSetAllocatorFunctions(
-    alloc_func: ?*const fn (usize, ?*anyopaque) callconv(.C) ?*anyopaque,
-    free_func: ?*const fn (?*anyopaque, ?*anyopaque) callconv(.C) void,
+    alloc_func: ?*const fn (usize, ?*anyopaque) callconv(.c) ?*anyopaque,
+    free_func: ?*const fn (?*anyopaque, ?*anyopaque) callconv(.c) void,
 ) void;
 //--------------------------------------------------------------------------------------------------
 pub const ConfigFlags = packed struct(c_int) {
@@ -829,7 +833,7 @@ pub const SizeCallbackData = extern struct {
     current_size: [2]f32, // Read-only.   Current window size.
     desired_size: [2]f32, // Read-write.  Desired size, based on user's mouse position. Write to this field to restrain resizing.
 };
-pub const SizeCallback = fn (data: *SizeCallbackData) callconv(.C) void;
+pub const SizeCallback = fn (data: *SizeCallbackData) callconv(.c) void;
 
 pub const WindowSizeConstraints = struct {
     size_min: [2]f32 = .{ 0, 0 },
@@ -2921,7 +2925,7 @@ pub const InputTextCallbackData = extern struct {
     }
 };
 
-pub const InputTextCallback = *const fn (data: *InputTextCallbackData) callconv(.C) i32;
+pub const InputTextCallback = *const fn (data: *InputTextCallbackData) callconv(.c) i32;
 //--------------------------------------------------------------------------------------------------
 pub fn inputText(label: [:0]const u8, args: struct {
     buf: [:0]u8,
@@ -3962,17 +3966,19 @@ extern fn zguiSetNextFrameWantCaptureKeyboard(want_capture_keyboard: bool) void;
 // Helpers
 //
 //--------------------------------------------------------------------------------------------------
-var temp_buffer: ?std.ArrayList(u8) = null;
+var temp_buffer: std.ArrayList(u8) = .empty;
 
 pub fn format(comptime fmt: []const u8, args: anytype) []const u8 {
     const len = std.fmt.count(fmt, args);
-    if (len > temp_buffer.?.items.len) temp_buffer.?.resize(@intCast(len + 64)) catch unreachable;
-    return std.fmt.bufPrint(temp_buffer.?.items, fmt, args) catch unreachable;
+    const a = mem_allocator orelse unreachable;
+    if (len > temp_buffer.items.len) temp_buffer.resize(a, @intCast(len + 64)) catch unreachable;
+    return std.fmt.bufPrint(temp_buffer.items, fmt, args) catch unreachable;
 }
 pub fn formatZ(comptime fmt: []const u8, args: anytype) [:0]const u8 {
     const len = std.fmt.count(fmt ++ "\x00", args);
-    if (len > temp_buffer.?.items.len) temp_buffer.?.resize(@intCast(len + 64)) catch unreachable;
-    return std.fmt.bufPrintZ(temp_buffer.?.items, fmt, args) catch unreachable;
+    const a = mem_allocator orelse unreachable;
+    if (len > temp_buffer.items.len) temp_buffer.resize(a, @intCast(len + 64)) catch unreachable;
+    return std.fmt.bufPrintZ(temp_buffer.items, fmt, args) catch unreachable;
 }
 //--------------------------------------------------------------------------------------------------
 pub fn typeToDataTypeEnum(comptime T: type) DataType {
@@ -4511,7 +4517,7 @@ pub const DrawCmd = extern struct {
     user_callback_data_offset: c_int,
 };
 
-pub const DrawCallback = *const fn (parent_list: *const DrawList, *const anyopaque, *const DrawCmd) callconv(.C) void;
+pub const DrawCallback = *const fn (parent_list: *const DrawList, *const anyopaque, *const DrawCmd) callconv(.c) void;
 
 pub const getWindowDrawList = zguiGetWindowDrawList;
 pub const getBackgroundDrawList = zguiGetBackgroundDrawList;
