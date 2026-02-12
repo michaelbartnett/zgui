@@ -474,12 +474,12 @@ pub const DrawData = *extern struct {
 pub const Font = opaque {};
 pub const Ident = u32;
 pub const TextureIdent = u64;
-pub const TextureData = opaque{};
+pub const TextureData = opaque {};
 pub const Wchar = if (@import("zgui_options").use_wchar32) u32 else u16;
 pub const Key = enum(c_int) {
     // Keyboard
     none = 0,
-    tab = 512,             // == ImGuiKey_NamedKey_BEGIN
+    tab = 512, // == ImGuiKey_NamedKey_BEGIN
     left_arrow,
     right_arrow,
     up_arrow,
@@ -497,7 +497,7 @@ pub const Key = enum(c_int) {
     left_ctrl,
     left_shift,
     left_alt,
-    left_super,     // Also see ImGuiMod_Ctrl, ImGuiMod_Shift, ImGuiMod_Alt, ImGuiMod_Super below!
+    left_super, // Also see ImGuiMod_Ctrl, ImGuiMod_Shift, ImGuiMod_Alt, ImGuiMod_Super below!
     right_ctrl,
     right_shift,
     right_alt,
@@ -563,17 +563,17 @@ pub const Key = enum(c_int) {
     f22,
     f23,
     f24,
-    apostrophe,        // '
-    comma,             // ,
-    minus,             // -
-    period,            // .
-    slash,             // /
-    semicolon,         // ;
-    equal,             // =
-    left_bracket,       // [
-    back_slash,         // \ (this text inhibit multiline comment caused by backslash)
-    right_bracket,      // ]
-    grave_accent,       // `
+    apostrophe, // '
+    comma, // ,
+    minus, // -
+    period, // .
+    slash, // /
+    semicolon, // ;
+    equal, // =
+    left_bracket, // [
+    back_slash, // \ (this text inhibit multiline comment caused by backslash)
+    right_bracket, // ]
+    grave_accent, // `
     caps_lock,
     scroll_lock,
     num_lock,
@@ -597,38 +597,38 @@ pub const Key = enum(c_int) {
     keypad_enter,
     keypad_equal,
 
-    app_back,               // Available on some keyboard/mouses. Often referred as "Browser Back"
+    app_back, // Available on some keyboard/mouses. Often referred as "Browser Back"
     app_forward,
-    oem102,                // Non-US backslash.
+    oem102, // Non-US backslash.
 
     // Gamepad
     // (analog values are 0.0f to 1.0f)
     // (download controller mapping PNG/PSD at http://dearimgui.com/controls_sheets)
     //                              // XBOX        | SWITCH  | PLAYSTA. | -> ACTION
-    gamepad_start,          // Menu        | +       | Options  |
-    gamepad_back,           // View        | -       | Share    |
-    gamepad_face_left,       // X           | Y       | Square   | Tap: Toggle Menu. Hold: Windowing mode (Focus/Move/Resize windows)
-    gamepad_face_right,      // B           | A       | Circle   | Cancel / Close / Exit
-    gamepad_face_up,         // Y           | X       | Triangle | Text Input / On-screen Keyboard
-    gamepad_face_down,       // A           | B       | Cross    | Activate / Open / Toggle / Tweak
-    gamepad_dpad_left,       // D-pad Left  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
-    gamepad_dpad_right,      // D-pad Right | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
-    gamepad_dpad_up,         // D-pad Up    | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
-    gamepad_dpad_down,       // D-pad Down  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
-    gamepad_l1,             // L Bumper    | L       | L1       | Tweak Slower / Focus Previous (in Windowing mode)
-    gamepad_r1,             // R Bumper    | R       | R1       | Tweak Faster / Focus Next (in Windowing mode)
-    gamepad_l2,             // L Trigger   | ZL      | L2       | [Analog]
-    gamepad_r2,             // R Trigger   | ZR      | R2       | [Analog]
-    gamepad_l3,             // L Stick     | L3      | L3       |
-    gamepad_r3,             // R Stick     | R3      | R3       |
-    gamepad_l_stick_left,     //             |         |          | [Analog] Move Window (in Windowing mode)
-    gamepad_l_stick_right,    //             |         |          | [Analog] Move Window (in Windowing mode)
-    gamepad_l_stick_up,       //             |         |          | [Analog] Move Window (in Windowing mode)
-    gamepad_l_stick_down,     //             |         |          | [Analog] Move Window (in Windowing mode)
-    gamepad_r_stick_left,     //             |         |          | [Analog]
-    gamepad_r_stick_right,    //             |         |          | [Analog]
-    gamepad_r_stick_up,       //             |         |          | [Analog]
-    gamepad_r_stick_down,     //             |         |          | [Analog]
+    gamepad_start, // Menu        | +       | Options  |
+    gamepad_back, // View        | -       | Share    |
+    gamepad_face_left, // X           | Y       | Square   | Tap: Toggle Menu. Hold: Windowing mode (Focus/Move/Resize windows)
+    gamepad_face_right, // B           | A       | Circle   | Cancel / Close / Exit
+    gamepad_face_up, // Y           | X       | Triangle | Text Input / On-screen Keyboard
+    gamepad_face_down, // A           | B       | Cross    | Activate / Open / Toggle / Tweak
+    gamepad_dpad_left, // D-pad Left  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_dpad_right, // D-pad Right | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_dpad_up, // D-pad Up    | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_dpad_down, // D-pad Down  | "       | "        | Move / Tweak / Resize Window (in Windowing mode)
+    gamepad_l1, // L Bumper    | L       | L1       | Tweak Slower / Focus Previous (in Windowing mode)
+    gamepad_r1, // R Bumper    | R       | R1       | Tweak Faster / Focus Next (in Windowing mode)
+    gamepad_l2, // L Trigger   | ZL      | L2       | [Analog]
+    gamepad_r2, // R Trigger   | ZR      | R2       | [Analog]
+    gamepad_l3, // L Stick     | L3      | L3       |
+    gamepad_r3, // R Stick     | R3      | R3       |
+    gamepad_l_stick_left, //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_l_stick_right, //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_l_stick_up, //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_l_stick_down, //             |         |          | [Analog] Move Window (in Windowing mode)
+    gamepad_r_stick_left, //             |         |          | [Analog]
+    gamepad_r_stick_right, //             |         |          | [Analog]
+    gamepad_r_stick_up, //             |         |          | [Analog]
+    gamepad_r_stick_down, //             |         |          | [Analog]
 
     // Aliases: Mouse Buttons (auto-submitted from AddMouseButtonEvent() calls)
     // - This is mirroring the data also written to io.MouseDown[], io.MouseWheel, in a format allowing them to be accessed via standard key API.
@@ -800,7 +800,7 @@ pub fn setNextWindowViewport(viewport_id: Ident) void {
 }
 extern fn zguiSetNextWindowViewport(viewport_id: Ident) void;
 //--------------------------------------------------------------------------------------------------
-const SetNextWindowPos = struct {
+pub const SetNextWindowPos = struct {
     x: f32,
     y: f32,
     cond: Condition = .none,
@@ -812,7 +812,7 @@ pub fn setNextWindowPos(args: SetNextWindowPos) void {
 }
 extern fn zguiSetNextWindowPos(x: f32, y: f32, cond: Condition, pivot_x: f32, pivot_y: f32) void;
 //--------------------------------------------------------------------------------------------------
-const SetNextWindowSize = struct {
+pub const SetNextWindowSize = struct {
     w: f32,
     h: f32,
     cond: Condition = .none,
@@ -856,7 +856,7 @@ pub fn setNextWindowSizeConstraints(args: WindowSizeConstraints) void {
     zguiSetNextWindowSizeConstraints(&args.size_min, &args.size_max, args.custom_callback, args.custom_callback_data);
 }
 //--------------------------------------------------------------------------------------------------
-const SetNextWindowCollapsed = struct {
+pub const SetNextWindowCollapsed = struct {
     collapsed: bool,
     cond: Condition = .none,
 };
@@ -899,7 +899,7 @@ pub const setNavCursorVisible = zguiSetNavCursorVisible;
 extern fn zguiSetNextItemAllowOverlap() void;
 pub const setNextItemAllowOverlap = zguiSetNextItemAllowOverlap;
 //--------------------------------------------------------------------------------------------------
-const Begin = struct {
+pub const Begin = struct {
     popen: ?*bool = null,
     flags: WindowFlags = .{},
 };
@@ -911,7 +911,7 @@ pub const end = zguiEnd;
 extern fn zguiBegin(name: [*:0]const u8, popen: ?*bool, flags: WindowFlags) bool;
 extern fn zguiEnd() void;
 //--------------------------------------------------------------------------------------------------
-const BeginChild = struct {
+pub const BeginChild = struct {
     w: f32 = 0.0,
     h: f32 = 0.0,
     child_flags: ChildFlags = .{},
@@ -947,10 +947,10 @@ extern fn zguiSetScrollX(scroll_x: f32) void;
 extern fn zguiSetScrollY(scroll_y: f32) void;
 extern fn zguiGetScrollMaxX() f32;
 extern fn zguiGetScrollMaxY() f32;
-const SetScrollHereX = struct {
+pub const SetScrollHereX = struct {
     center_x_ratio: f32 = 0.5,
 };
-const SetScrollHereY = struct {
+pub const SetScrollHereY = struct {
     center_y_ratio: f32 = 0.5,
 };
 pub fn setScrollHereX(args: SetScrollHereX) void {
@@ -959,11 +959,11 @@ pub fn setScrollHereX(args: SetScrollHereX) void {
 pub fn setScrollHereY(args: SetScrollHereY) void {
     zguiSetScrollHereY(args.center_y_ratio);
 }
-const SetScrollFromPosX = struct {
+pub const SetScrollFromPosX = struct {
     local_x: f32,
     center_x_ratio: f32 = 0.5,
 };
-const SetScrollFromPosY = struct {
+pub const SetScrollFromPosY = struct {
     local_y: f32,
     center_y_ratio: f32 = 0.5,
 };
@@ -1025,10 +1025,7 @@ pub const HoveredFlags = packed struct(c_int) {
         .allow_when_overlapped_by_window = true,
     };
 
-    pub const root_and_child_windows = HoveredFlags{
-        .root_window = true,
-        .child_windows = true
-    };
+    pub const root_and_child_windows = HoveredFlags{ .root_window = true, .child_windows = true };
 };
 //--------------------------------------------------------------------------------------------------
 /// `pub fn isWindowAppearing() bool`
@@ -1231,65 +1228,65 @@ pub const ListClipper = extern struct {
 pub const Style = extern struct {
     // *Font scaling
     // - recap: ImGui::GetFontSize() == FontSizeBase * (FontScaleMain * FontScaleDpi * other_scaling_factors)
-    font_size_base: f32,               // Current base font size before external global factors are applied. Use PushFont(NULL, size) to modify. Use ImGui::GetFontSize() to obtain scaled value.
-    font_scale_main: f32,              // Main global scale factor. May be set by application once, or exposed to end-user.
-    font_scale_dpi: f32,               // Additional global scale factor from viewport/monitor contents scale. When io.ConfigDpiScaleFonts is enabled, this is automatically overwritten when changing monitor DPI.
+    font_size_base: f32, // Current base font size before external global factors are applied. Use PushFont(NULL, size) to modify. Use ImGui::GetFontSize() to obtain scaled value.
+    font_scale_main: f32, // Main global scale factor. May be set by application once, or exposed to end-user.
+    font_scale_dpi: f32, // Additional global scale factor from viewport/monitor contents scale. When io.ConfigDpiScaleFonts is enabled, this is automatically overwritten when changing monitor DPI.
 
-    alpha: f32,                      // Global alpha applies to everything in Dear ImGui.
-    disabled_alpha: f32,              // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
-    window_padding: [2]f32,              // Padding within a window.
-    window_rounding: f32,             // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
-    window_border_size: f32,           // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    window_border_hover_padding: f32,   // Hit-testing extent outside/inside resizing border. Also extend determination of hovered window. Generally meaningfully larger than WindowBorderSize to make it easy to reach borders.
-    window_min_size: [2]f32,              // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
-    window_title_align: [2]f32,           // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
-    window_menu_button_position: Direction,   // Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left.
-    child_rounding: f32,              // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
-    child_border_size: f32,            // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    popup_rounding: f32,              // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
-    popup_border_size: f32,            // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    frame_padding: [2]f32,               // Padding within a framed rectangle (used by most widgets).
-    frame_rounding: f32,              // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
-    frame_border_size: f32,            // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    item_spacing: [2]f32,                // Horizontal and vertical spacing between widgets/lines.
-    item_inner_spacing: [2]f32,           // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
-    cell_padding: [2]f32,                // Padding within a table cell. Cellpadding.x is locked for entire table. CellPadding.y may be altered between different rows.
-    touch_extra_padding: [2]f32,          // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
-    indent_spacing: f32,              // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
-    columns_min_spacing: f32,          // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
-    scrollbar_size: f32,              // Width of the vertical scrollbar, Height of the horizontal scrollbar.
-    scrollbar_rounding: f32,          // Radius of grab corners for scrollbar.
-    grab_min_size: f32,                // Minimum width/height of a grab box for slider/scrollbar.
-    grab_rounding: f32,               // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
-    log_slider_deadzone: f32,          // The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
-    image_border_size: f32,            // Thickness of border around Image() calls.
-    tab_rounding: f32,                // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
-    tab_border_size: f32,              // Thickness of border around tabs.
-    tab_min_width_base: f32,            // Minimum tab width, to make tabs larger than their contents. TabBar buttons are not affected.
-    tab_min_width_shrink: f32,          // Minimum tab width after shrinking, when using ImGuiTabBarFlags_FittingPolicyMixed policy.
-    tab_close_button_min_width_selected: f32,     // -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width.
-    tab_close_button_min_width_unselected: f32,   // -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width. FLT_MAX: never show close button when unselected.
-    tab_bar_border_size: f32,           // Thickness of tab-bar separator, which takes on the tab active color to denote focus.
-    tab_bar_overline_size: f32,         // Thickness of tab-bar overline, which highlights the selected tab-bar.
-    table_angled_headers_angle: f32,    // Angle of angled headers (supported values range from -50.0f degrees to +50.0f degrees).
-    table_angled_headers_text_align: [2]f32,// Alignment of angled headers within the cell
-    tree_lines_flags: TreeNodeFlags,      // Default way to draw lines connecting TreeNode hierarchy. ImGuiTreeNodeFlags_DrawLinesNone or ImGuiTreeNodeFlags_DrawLinesFull or ImGuiTreeNodeFlags_DrawLinesToNodes.
-    tree_lines_size: f32,              // Thickness of outlines when using ImGuiTreeNodeFlags_DrawLines.
-    tree_lines_rounding: f32,          // Radius of lines connecting child nodes to the vertical line.
-    color_button_position: Direction,        // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
-    button_text_align: [2]f32,            // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
-    selectable_text_align: [2]f32,        // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
-    separator_text_border_size: f32,    // Thickness of border in SeparatorText()
-    separator_text_align: [2]f32,         // Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center).
-    separator_text_padding: [2]f32,       // Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y.
-    display_window_padding: [2]f32,       // Apply to regular windows: amount which we enforce to keep visible when moving near edges of your screen.
-    display_safe_area_padding: [2]f32,     // Apply to every windows, menus, popups, tooltips: amount where we avoid displaying contents. Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).
-    docking_separator_size: f32,       // Thickness of resizing border between docked windows
-    mouse_cursor_scale: f32,           // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). We apply per-monitor DPI scaling over this scale. May be removed later.
-    anti_aliased_lines: bool,           // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
-    anti_aliased_lines_use_tex: bool,     // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to ImDrawList).
-    anti_aliased_fill: bool,            // Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
-    curve_tessellation_tol: f32,       // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
+    alpha: f32, // Global alpha applies to everything in Dear ImGui.
+    disabled_alpha: f32, // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
+    window_padding: [2]f32, // Padding within a window.
+    window_rounding: f32, // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
+    window_border_size: f32, // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    window_border_hover_padding: f32, // Hit-testing extent outside/inside resizing border. Also extend determination of hovered window. Generally meaningfully larger than WindowBorderSize to make it easy to reach borders.
+    window_min_size: [2]f32, // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
+    window_title_align: [2]f32, // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
+    window_menu_button_position: Direction, // Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to ImGuiDir_Left.
+    child_rounding: f32, // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
+    child_border_size: f32, // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    popup_rounding: f32, // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
+    popup_border_size: f32, // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    frame_padding: [2]f32, // Padding within a framed rectangle (used by most widgets).
+    frame_rounding: f32, // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
+    frame_border_size: f32, // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+    item_spacing: [2]f32, // Horizontal and vertical spacing between widgets/lines.
+    item_inner_spacing: [2]f32, // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
+    cell_padding: [2]f32, // Padding within a table cell. Cellpadding.x is locked for entire table. CellPadding.y may be altered between different rows.
+    touch_extra_padding: [2]f32, // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    indent_spacing: f32, // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
+    columns_min_spacing: f32, // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
+    scrollbar_size: f32, // Width of the vertical scrollbar, Height of the horizontal scrollbar.
+    scrollbar_rounding: f32, // Radius of grab corners for scrollbar.
+    grab_min_size: f32, // Minimum width/height of a grab box for slider/scrollbar.
+    grab_rounding: f32, // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+    log_slider_deadzone: f32, // The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
+    image_border_size: f32, // Thickness of border around Image() calls.
+    tab_rounding: f32, // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
+    tab_border_size: f32, // Thickness of border around tabs.
+    tab_min_width_base: f32, // Minimum tab width, to make tabs larger than their contents. TabBar buttons are not affected.
+    tab_min_width_shrink: f32, // Minimum tab width after shrinking, when using ImGuiTabBarFlags_FittingPolicyMixed policy.
+    tab_close_button_min_width_selected: f32, // -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width.
+    tab_close_button_min_width_unselected: f32, // -1: always visible. 0.0f: visible when hovered. >0.0f: visible when hovered if minimum width. FLT_MAX: never show close button when unselected.
+    tab_bar_border_size: f32, // Thickness of tab-bar separator, which takes on the tab active color to denote focus.
+    tab_bar_overline_size: f32, // Thickness of tab-bar overline, which highlights the selected tab-bar.
+    table_angled_headers_angle: f32, // Angle of angled headers (supported values range from -50.0f degrees to +50.0f degrees).
+    table_angled_headers_text_align: [2]f32, // Alignment of angled headers within the cell
+    tree_lines_flags: TreeNodeFlags, // Default way to draw lines connecting TreeNode hierarchy. ImGuiTreeNodeFlags_DrawLinesNone or ImGuiTreeNodeFlags_DrawLinesFull or ImGuiTreeNodeFlags_DrawLinesToNodes.
+    tree_lines_size: f32, // Thickness of outlines when using ImGuiTreeNodeFlags_DrawLines.
+    tree_lines_rounding: f32, // Radius of lines connecting child nodes to the vertical line.
+    color_button_position: Direction, // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
+    button_text_align: [2]f32, // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
+    selectable_text_align: [2]f32, // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    separator_text_border_size: f32, // Thickness of border in SeparatorText()
+    separator_text_align: [2]f32, // Alignment of text within the separator. Defaults to (0.0f, 0.5f) (left aligned, center).
+    separator_text_padding: [2]f32, // Horizontal offset of text from each edge of the separator + spacing on other axis. Generally small values. .y is recommended to be == FramePadding.y.
+    display_window_padding: [2]f32, // Apply to regular windows: amount which we enforce to keep visible when moving near edges of your screen.
+    display_safe_area_padding: [2]f32, // Apply to every windows, menus, popups, tooltips: amount where we avoid displaying contents. Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).
+    docking_separator_size: f32, // Thickness of resizing border between docked windows
+    mouse_cursor_scale: f32, // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). We apply per-monitor DPI scaling over this scale. May be removed later.
+    anti_aliased_lines: bool, // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    anti_aliased_lines_use_tex: bool, // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to ImDrawList).
+    anti_aliased_fill: bool, // Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to ImDrawList).
+    curve_tessellation_tol: f32, // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
     circle_tessellation_max_error: f32, // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
 
     // Colors
@@ -1297,15 +1294,15 @@ pub const Style = extern struct {
 
     // Behaviors
     // (It is possible to modify those fields mid-frame if specific behavior need it, unlike e.g. configuration fields in ImGuiIO)
-    hover_stationary_delay: f32,                  // Delay for IsItemHovered(ImGuiHoveredFlags_Stationary). Time required to consider mouse stationary.
-    hover_delay_short: f32,                       // Delay for IsItemHovered(ImGuiHoveredFlags_DelayShort). Usually used along with HoverStationaryDelay.
-    hover_delay_normal: f32,                      // Delay for IsItemHovered(ImGuiHoveredFlags_DelayNormal). "
+    hover_stationary_delay: f32, // Delay for IsItemHovered(ImGuiHoveredFlags_Stationary). Time required to consider mouse stationary.
+    hover_delay_short: f32, // Delay for IsItemHovered(ImGuiHoveredFlags_DelayShort). Usually used along with HoverStationaryDelay.
+    hover_delay_normal: f32, // Delay for IsItemHovered(ImGuiHoveredFlags_DelayNormal). "
     hover_flags_for_tooltip_mouse: HoveredFlags, // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using mouse.
-    hover_flags_for_tooltip_nav: HoveredFlags,   // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
+    hover_flags_for_tooltip_nav: HoveredFlags, // Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
 
     // [Internal]
-    _main_scale: f32,                            // FIXME-WIP: Reference scale, as applied by ScaleAllSizes().
-    _next_frame_font_size_base: f32,             // FIXME: Temporary hack until we finish remaining work.
+    _main_scale: f32, // FIXME-WIP: Reference scale, as applied by ScaleAllSizes().
+    _next_frame_font_size_base: f32, // FIXME: Temporary hack until we finish remaining work.
 
     /// `pub fn init() Style`
     pub fn init() Style {
@@ -1367,64 +1364,64 @@ extern fn zguiStyleColorsClassic(style: *Style) void;
 pub const StyleCol = enum(c_int) {
     text,
     text_disabled,
-    window_bg,              // Background of normal windows
-    child_bg,               // Background of child windows
-    popup_bg,               // Background of popups, menus, tooltips windows
+    window_bg, // Background of normal windows
+    child_bg, // Background of child windows
+    popup_bg, // Background of popups, menus, tooltips windows
     border,
     border_shadow,
-    frame_bg,               // Background of checkbox, radio button, plot, slider, text input
+    frame_bg, // Background of checkbox, radio button, plot, slider, text input
     frame_bg_hovered,
     frame_bg_active,
-    title_bg,               // Title bar
-    title_bg_active,         // Title bar when focused
-    title_bg_collapsed,      // Title bar when collapsed
+    title_bg, // Title bar
+    title_bg_active, // Title bar when focused
+    title_bg_collapsed, // Title bar when collapsed
     menu_bar_bg,
     scrollbar_bg,
     scrollbar_grab,
     scrollbar_grab_hovered,
     scrollbar_grab_active,
-    check_mark,             // Checkbox tick and RadioButton circle
+    check_mark, // Checkbox tick and RadioButton circle
     slider_grab,
     slider_grab_active,
     button,
     button_hovered,
     button_active,
-    header,                // Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
+    header, // Header* colors are used for CollapsingHeader, TreeNode, Selectable, MenuItem
     header_hovered,
     header_active,
     separator,
     separator_hovered,
     separator_active,
-    resize_grip,            // Resize grip in lower-right and lower-left corners of windows.
+    resize_grip, // Resize grip in lower-right and lower-left corners of windows.
     resize_grip_hovered,
     resize_grip_active,
-    input_text_cursor,       // InputText cursor/caret
-    tab_hovered,            // Tab background, when hovered
-    tab,                   // Tab background, when tab-bar is focused & tab is unselected
-    tab_selected,           // Tab background, when tab-bar is focused & tab is selected
-    tab_selected_overline,   // Tab horizontal overline, when tab-bar is focused & tab is selected
-    tab_dimmed,             // Tab background, when tab-bar is unfocused & tab is unselected
-    tab_dimmed_selected,     // Tab background, when tab-bar is unfocused & tab is selected
-    tab_dimmed_selected_overline,//..horizontal overline, when tab-bar is unfocused & tab is selected
-    docking_preview,        // Preview overlay color when about to docking something
-    docking_empty_bg,        // Background color for empty node (e.g. CentralNode with no window docked into it)
+    input_text_cursor, // InputText cursor/caret
+    tab_hovered, // Tab background, when hovered
+    tab, // Tab background, when tab-bar is focused & tab is unselected
+    tab_selected, // Tab background, when tab-bar is focused & tab is selected
+    tab_selected_overline, // Tab horizontal overline, when tab-bar is focused & tab is selected
+    tab_dimmed, // Tab background, when tab-bar is unfocused & tab is unselected
+    tab_dimmed_selected, // Tab background, when tab-bar is unfocused & tab is selected
+    tab_dimmed_selected_overline, //..horizontal overline, when tab-bar is unfocused & tab is selected
+    docking_preview, // Preview overlay color when about to docking something
+    docking_empty_bg, // Background color for empty node (e.g. CentralNode with no window docked into it)
     plot_lines,
     plot_lines_hovered,
     plot_histogram,
     plot_histogram_hovered,
-    table_header_bg,         // Table header background
-    table_border_strong,     // Table outer and header borders (prefer using Alpha=1.0 here)
-    table_border_light,      // Table inner borders (prefer using Alpha=1.0 here)
-    table_row_bg,            // Table row background (even rows)
-    table_row_bg_alt,         // Table row background (odd rows)
-    text_link,              // Hyperlink color
-    text_selected_bg,        // Selected text inside an InputText
-    tree_lines,             // Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
-    drag_drop_target,        // Rectangle highlighting a drop target
-    nav_cursor,             // Color of keyboard/gamepad navigation cursor/rectangle, when visible
+    table_header_bg, // Table header background
+    table_border_strong, // Table outer and header borders (prefer using Alpha=1.0 here)
+    table_border_light, // Table inner borders (prefer using Alpha=1.0 here)
+    table_row_bg, // Table row background (even rows)
+    table_row_bg_alt, // Table row background (odd rows)
+    text_link, // Hyperlink color
+    text_selected_bg, // Selected text inside an InputText
+    tree_lines, // Tree node hierarchy outlines when using ImGuiTreeNodeFlags_DrawLines
+    drag_drop_target, // Rectangle highlighting a drop target
+    nav_cursor, // Color of keyboard/gamepad navigation cursor/rectangle, when visible
     nav_windowing_highlight, // Highlight window when using CTRL+TAB
-    nav_windowing_dim_bg,     // Darken/colorize entire screen behind the CTRL+TAB window list, when active
-    modal_window_dim_bg,      // Darken/colorize entire screen behind a modal window, when one is active
+    nav_windowing_dim_bg, // Darken/colorize entire screen behind the CTRL+TAB window list, when active
+    modal_window_dim_bg, // Darken/colorize entire screen behind a modal window, when one is active
 };
 
 pub fn pushStyleColor4f(args: struct {
@@ -1462,45 +1459,45 @@ extern fn zguiPopTextWrapPos() void;
 //--------------------------------------------------------------------------------------------------
 pub const StyleVar = enum(c_int) {
     // Enum name ------------------- // Member in ImGuiStyle structure (see ImGuiStyle for descriptions)
-    alpha,                           // float     Alpha
-    disabled_alpha,                  // float     DisabledAlpha
-    window_padding,                  // ImVec2    WindowPadding
-    window_rounding,                 // float     WindowRounding
-    window_border_size,              // float     WindowBorderSize
-    window_min_size,                 // ImVec2    WindowMinSize
-    window_title_align,              // ImVec2    WindowTitleAlign
-    child_rounding,                  // float     ChildRounding
-    child_border_size,               // float     ChildBorderSize
-    popup_rounding,                  // float     PopupRounding
-    popup_border_size,               // float     PopupBorderSize
-    frame_padding,                   // ImVec2    FramePadding
-    frame_rounding,                  // float     FrameRounding
-    frame_border_size,               // float     FrameBorderSize
-    item_spacing,                    // ImVec2    ItemSpacing
-    item_inner_spacing,              // ImVec2    ItemInnerSpacing
-    indent_spacing,                  // float     IndentSpacing
-    cell_padding,                    // ImVec2    CellPadding
-    scrollbar_size,                  // float     ScrollbarSize
-    scrollbar_rounding,              // float     ScrollbarRounding
-    grab_min_size,                   // float     GrabMinSize
-    grab_rounding,                   // float     GrabRounding
-    image_border_size,               // float     ImageBorderSize
-    tab_rounding,                    // float     TabRounding
-    tab_border_size,                 // float     TabBorderSize
-    tab_min_width_base,              // float     TabMinWidthBase
-    tab_min_width_shrink,            // float     TabMinWidthShrink
-    tab_bar_border_size,             // float     TabBarBorderSize
-    tab_bar_overline_size,           // float     TabBarOverlineSize
-    table_angled_headers_angle,      // float     TableAngledHeadersAngle
+    alpha, // float     Alpha
+    disabled_alpha, // float     DisabledAlpha
+    window_padding, // ImVec2    WindowPadding
+    window_rounding, // float     WindowRounding
+    window_border_size, // float     WindowBorderSize
+    window_min_size, // ImVec2    WindowMinSize
+    window_title_align, // ImVec2    WindowTitleAlign
+    child_rounding, // float     ChildRounding
+    child_border_size, // float     ChildBorderSize
+    popup_rounding, // float     PopupRounding
+    popup_border_size, // float     PopupBorderSize
+    frame_padding, // ImVec2    FramePadding
+    frame_rounding, // float     FrameRounding
+    frame_border_size, // float     FrameBorderSize
+    item_spacing, // ImVec2    ItemSpacing
+    item_inner_spacing, // ImVec2    ItemInnerSpacing
+    indent_spacing, // float     IndentSpacing
+    cell_padding, // ImVec2    CellPadding
+    scrollbar_size, // float     ScrollbarSize
+    scrollbar_rounding, // float     ScrollbarRounding
+    grab_min_size, // float     GrabMinSize
+    grab_rounding, // float     GrabRounding
+    image_border_size, // float     ImageBorderSize
+    tab_rounding, // float     TabRounding
+    tab_border_size, // float     TabBorderSize
+    tab_min_width_base, // float     TabMinWidthBase
+    tab_min_width_shrink, // float     TabMinWidthShrink
+    tab_bar_border_size, // float     TabBarBorderSize
+    tab_bar_overline_size, // float     TabBarOverlineSize
+    table_angled_headers_angle, // float     TableAngledHeadersAngle
     table_angled_headers_text_align, // ImVec2    TableAngledHeadersTextAlign
-    tree_lines_size,                 // float     TreeLinesSize
-    tree_lines_rounding,             // float     TreeLinesRounding
-    button_text_align,               // ImVec2    ButtonTextAlign
-    selectable_text_align,           // ImVec2    SelectableTextAlign
-    separator_text_border_size,      // float     SeparatorTextBorderSize
-    separator_text_align,            // ImVec2    SeparatorTextAlign
-    separator_text_padding,          // ImVec2    SeparatorTextPadding
-    docking_separator_size,          // float     DockingSeparatorSize
+    tree_lines_size, // float     TreeLinesSize
+    tree_lines_rounding, // float     TreeLinesRounding
+    button_text_align, // ImVec2    ButtonTextAlign
+    selectable_text_align, // ImVec2    SelectableTextAlign
+    separator_text_border_size, // float     SeparatorTextBorderSize
+    separator_text_align, // ImVec2    SeparatorTextAlign
+    separator_text_padding, // ImVec2    SeparatorTextPadding
+    docking_separator_size, // float     DockingSeparatorSize
 };
 
 pub fn pushStyleVar1f(args: struct {
@@ -1600,7 +1597,7 @@ pub fn separatorText(label: [:0]const u8) void {
 }
 extern fn zguiSeparatorText(label: [*:0]const u8) void;
 //--------------------------------------------------------------------------------------------------
-const SameLine = struct {
+pub const SameLine = struct {
     offset_from_start_x: f32 = 0.0,
     spacing: f32 = -1.0,
 };
@@ -1617,7 +1614,7 @@ extern fn zguiNewLine() void;
 pub const spacing = zguiSpacing;
 extern fn zguiSpacing() void;
 //--------------------------------------------------------------------------------------------------
-const Dummy = struct {
+pub const Dummy = struct {
     w: f32,
     h: f32,
 };
@@ -1844,7 +1841,7 @@ pub fn labelText(label: [:0]const u8, comptime fmt: []const u8, args: anytype) v
 }
 extern fn zguiLabelText(label: [*:0]const u8, fmt: [*:0]const u8, ...) void;
 //--------------------------------------------------------------------------------------------------
-const CalcTextSize = struct {
+pub const CalcTextSize = struct {
     hide_text_after_double_hash: bool = false,
     wrap_width: f32 = -1.0,
 };
@@ -2213,7 +2210,7 @@ extern fn zguiDragFloat(
     flags: SliderFlags,
 ) bool;
 //--------------------------------------------------------------------------------------------------
-const DragFloat2 = DragFloatGen([2]f32);
+pub const DragFloat2 = DragFloatGen([2]f32);
 pub fn dragFloat2(label: [:0]const u8, args: DragFloat2) bool {
     return zguiDragFloat2(label, args.v, args.speed, args.min, args.max, args.cfmt, args.flags);
 }
@@ -4415,7 +4412,7 @@ const SelectionRequest = extern struct {
 /// Selection request type
 const SelectionRequestType = enum(c_int) {
     none = 0,
-    set_all,   // Request app to clear selection (if Selected==false) or select all items (if Selected==true)
+    set_all, // Request app to clear selection (if Selected==false) or select all items (if Selected==true)
     set_range, // Request app to select/unselect [RangeFirstItem..RangeLastItem] items (inclusive) based on value of Selected. Only EndMultiSelect() request this, app code can read after BeginMultiSelect() and it will always be false.
 };
 
@@ -4619,7 +4616,7 @@ pub const DrawList = opaque {
     extern fn zguiDrawList_GetFlags(draw_list: *const DrawList) DrawListFlags;
 
     //----------------------------------------------------------------------------------------------
-    const ClipRect = struct {
+    pub const ClipRect = struct {
         pmin: [2]f32,
         pmax: [2]f32,
         intersect_with_current: bool = false,
@@ -4991,7 +4988,7 @@ pub const DrawList = opaque {
         text: [*]const u8,
         text_end: [*]const u8,
     ) void;
-    const AddTextArgs = struct {
+    pub const AddTextArgs = struct {
         font: ?*Font,
         font_size: f32,
         wrap_width: f32 = 0,
@@ -5395,7 +5392,7 @@ pub const DrawList = opaque {
         num_segments: c_int,
     ) void;
     //----------------------------------------------------------------------------------------------
-    const PathRect = struct {
+    pub const PathRect = struct {
         bmin: [2]f32,
         bmax: [2]f32,
         rounding: f32 = 0.0,
