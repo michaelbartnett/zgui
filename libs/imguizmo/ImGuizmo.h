@@ -117,6 +117,20 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 
 namespace IMGUIZMO_NAMESPACE
 {
+   struct Context;
+
+   void Init();
+
+   void Deinit();
+
+   IMGUI_API Context* CreateContext();
+
+   IMGUI_API void DestroyContext(Context* context);
+
+   IMGUI_API void SetCurrentContext(Context* context);
+
+   IMGUI_API Context* GetCurrentContext();
+
    // call inside your own window and before Manipulate() in order to draw gizmo to that window.
    // Or pass a specific ImDrawList to draw to (e.g. ImGui::GetForegroundDrawList()).
    IMGUI_API void SetDrawlist(ImDrawList* drawlist = nullptr);

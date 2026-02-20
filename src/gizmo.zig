@@ -86,7 +86,33 @@ pub const Style = extern struct {
     colors: [@typeInfo(Color).@"enum".fields.len][4]f32,
 };
 
+pub const Context = opaque {};
+
 //---------------------------------------------------------------------------------------------------------------------|
+
+pub fn init() void {
+    zguiGizmo_Init();
+}
+
+pub fn deinit() void {
+    zguiGizmo_Deinit();
+}
+
+pub fn createContext() *Context {
+    return zguiGizmo_CreateContext();
+}
+
+pub fn destroyContext(context: *Context) void {
+    zguiGizmo_DestroyContext(context);
+}
+
+pub fn setCurrentContext(context: *Context) void {
+    zguiGizmo_SetCurrentContext(context);
+}
+
+pub fn getCurrentContext() *Context {
+    return zguiGizmo_GetCurrentContext();
+}
 
 pub fn setDrawList(draw_list: ?DrawList) void {
     zguiGizmo_SetDrawlist(draw_list);
@@ -239,6 +265,13 @@ pub fn getStyle() *Style {
 }
 
 //---------------------------------------------------------------------------------------------------------------------|
+
+extern fn zguiGizmo_Init() void;
+extern fn zguiGizmo_Deinit() void;
+extern fn zguiGizmo_CreateContext() *Context;
+extern fn zguiGizmo_DestroyContext(context: *Context) void;
+extern fn zguiGizmo_SetCurrentContext(context: *Context) void;
+extern fn zguiGizmo_GetCurrentContext() *Context;
 
 extern fn zguiGizmo_SetDrawlist(draw_list: ?DrawList) void;
 extern fn zguiGizmo_BeginFrame() void;
