@@ -761,9 +761,98 @@ namespace IMGUIZMO_NAMESPACE
 
       bool mAllowAxisFlip = true;
       float mGizmoSizeClipSpace = 0.1f;
+      
+      Context *mNextContext = NULL;
+      Context *mPrevContext = NULL;
    };
 
-   static Context gContext;
+   static Context* gHeadContext = NULL;
+   static Context* gCurrentContext = NULL;
+
+   void Init()
+   {
+      (void)CreateContext();
+   }
+
+   void Deinit()
+   {
+      Context *context = gHeadContext;
+      while (context)
+      {
+         Context *prev = context;
+         IM_DELETE(prev);
+         context = prev->mNextContext;
+      }
+      gCurrentContext = NULL;
+      gHeadContext = NULL;
+   }
+
+   Context* CreateContext()
+   {
+      Context* newContext = IM_NEW(Context);
+      IM_ASSERT(newContext != NULL);
+      newContext->mNextContext = gHeadContext;
+
+      if (gHeadContext != NULL)
+      {
+         gHeadContext->mPrevContext = newContext;
+      }
+      else
+      {
+         gHeadContext = newContext;
+      }
+
+      if (gCurrentContext == NULL)
+      {
+         gCurrentContext = newContext;
+      }
+
+      return newContext;
+   }
+
+   void DestroyContext(Context* context)
+   {
+      if (context->mPrevContext)
+      {
+         context->mPrevContext->mNextContext = context->mNextContext;
+      }
+      if (context->mNextContext)
+      {
+         context->mNextContext->mPrevContext = context->mPrevContext;
+      }
+
+      Context* successor = context->mNextContext != NULL ? context->mNextContext : context->mPrevContext;
+  
+      if (gHeadContext == context)
+      {
+         gHeadContext = successor;
+      }
+      if (gCurrentContext == context)
+      {
+         gCurrentContext = successor;
+      }
+
+      IM_DELETE(context);
+   }
+
+   void SetCurrentContext(Context* context)
+   {
+      IM_ASSERT(context != NULL);
+      gCurrentContext = context;
+   }
+
+   Context* GetCurrentContext()
+   {
+      return gCurrentContext;
+   }
+
+   static Context &GetCurrentContextAssertNotNull()
+   {
+      IM_ASSERT(gCurrentContext != NULL);
+      return *gCurrentContext;
+   }
+
+   #define gContext (GetCurrentContextAssertNotNull())
 
    static const vec_t directionUnary[3] = { makeVect(1.f, 0.f, 0.f), makeVect(0.f, 1.f, 0.f), makeVect(0.f, 0.f, 1.f) };
    static const char* translationInfoMask[] = { "X : %5.3f", "Y : %5.3f", "Z : %5.3f",
